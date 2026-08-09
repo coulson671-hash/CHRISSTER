@@ -9,6 +9,9 @@
     <!-- Lecteur QR -->
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
+    <!-- Lecteur YouTube -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+
     <style>
         * {
             box-sizing: border-box;
@@ -66,15 +69,29 @@
 
         #result {
             margin-top: 25px;
-            font-size: 20px;
+            font-size: 22px;
             font-weight: bold;
             display: none;
+        }
+
+        #musicScreen {
+            display: none;
+        }
+
+        #player {
+            width: 100%;
+            margin-top: 25px;
         }
 
         #stop {
             display: none;
             margin-top: 20px;
             background: #333;
+        }
+
+        #scanAgain {
+            display: none;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -89,17 +106,38 @@
         Votre jeu musical geek
     </div>
 
-    <button id="scanButton">
-        📷 SCANNER UNE CARTE
-    </button>
+    <!-- Écran scanner -->
 
-    <div id="reader"></div>
+    <div id="scannerScreen">
 
-    <div id="result"></div>
+        <button id="scanButton">
+            📷 SCANNER UNE CARTE
+        </button>
 
-    <button id="stop">
-        ✕ FERMER LE SCANNER
-    </button>
+        <div id="reader"></div>
+
+        <button id="stop">
+            ✕ FERMER LE SCANNER
+        </button>
+
+    </div>
+
+
+    <!-- Écran musique -->
+
+    <div id="musicScreen">
+
+        <div id="result">
+            🎵 MUSIQUE PRÊTE
+        </div>
+
+        <div id="player"></div>
+
+        <button id="scanAgain">
+            📷 CARTE SUIVANTE
+        </button>
+
+    </div>
 
 </div>
 
@@ -107,92 +145,240 @@
 <script>
 
     let scanner = null;
+    let youtubePlayer = null;
+
+    /*
+        ID YOUTUBE DE LA CARTE 001
+
+        Pour l'instant :
+        Song of Storms
+
+        IMPORTANT :
+        Remplace cette valeur par l'ID de ta vidéo YouTube.
+
+        Exemple :
+        https://www.youtube.com/watch?v=ABC123XYZ
+
+        L'ID serait :
+        ABC123XYZ
+    */
+
+    const songOfStormsID = "REMPLACE_MOI";
+
 
     const scanButton = document.getElementById("scanButton");
     const stopButton = document.getElementById("stop");
     const reader = document.getElementById("reader");
+
+    const scannerScreen = document.getElementById("scannerScreen");
+    const musicScreen = document.getElementById("musicScreen");
+
     const result = document.getElementById("result");
+    const scanAgain = document.getElementById("scanAgain");
 
 
-    // Quand on appuie sur SCANNER
+    /*
+        YouTube prépare son lecteur
+    */
+
+    function onYouTubeIframeAPIReady() {
+
+        console.log("YouTube prêt.");
+
+    }
+
+
+    /*
+        Lancer le scanner
+    */
+
     scanButton.addEventListener("click", async () => {
 
         scanButton.style.display = "none";
         reader.style.display = "block";
         stopButton.style.display = "inline-block";
-        result.style.display = "none";
 
         scanner = new Html5Qrcode("reader");
 
         try {
 
             await scanner.start(
+
                 { facingMode: "environment" },
 
                 {
                     fps: 10,
+
                     qrbox: {
                         width: 250,
                         height: 250
                     }
+
                 },
 
-                (decodedText) => {
+                async (decodedText) => {
 
-                    // QR détecté !
                     console.log("QR détecté :", decodedText);
 
-                    result.innerHTML =
-                        "✅ CARTE RECONNUE<br><br>" +
-                        "<small>" + decodedText + "</small>";
+                    /*
+                        QR détecté !
+                        On arrête immédiatement le scanner.
+                    */
 
-                    result.style.display = "block";
+                    await scanner.stop();
 
-                    // On arrête temporairement le scanner
-                    scanner.stop();
+                    scanner = null;
 
                     reader.style.display = "none";
                     stopButton.style.display = "none";
 
+                    scannerScreen.style.display = "none";
+                    musicScreen.style.display = "block";
+
+                    result.style.display = "block";
+
+                    scanAgain.style.display = "none";
+
+                    /*
+                        Pour l'instant, TOUS les QR
+                        lancent Song of Storms.
+
+                        Plus tard :
+                        QR 001 → Song of Storms
+                        QR 002 → autre musique
+                        QR 003 → autre musique
+                    */
+
+                    lancerMusique(songOfStormsID);
+
                 },
 
                 (errorMessage) => {
-                    // Rien à faire si aucun QR n'est encore détecté
+
+                    // Rien à faire lorsqu'aucun QR
+                    // n'est détecté.
+
                 }
 
             );
 
-        } catch (error) {
+        }
+
+        catch (error) {
 
             console.error(error);
 
-            result.innerHTML =
-                "❌ Impossible d'utiliser la caméra.";
-
-            result.style.display = "block";
+            alert(
+                "Impossible d'utiliser la caméra."
+            );
 
         }
 
     });
 
 
-    // Bouton fermer
+    /*
+        Création du lecteur YouTube
+    */
+
+    function lancerMusique(videoID) {
+
+        youtubePlayer = new YT.Player(
+            "player",
+
+            {
+
+                height: "220",
+
+                width: "100%",
+
+                videoId: videoID,
+
+                playerVars: {
+
+                    autoplay: 0,
+
+                    controls: 1,
+
+                    rel: 0,
+
+                    modestbranding: 1
+
+                },
+
+                events: {
+
+                    onReady: function(event) {
+
+                        console.log("Lecteur YouTube prêt.");
+
+                    }
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /*
+        CARTE SUIVANTE
+    */
+
+    scanAgain.addEventListener("click", () => {
+
+        /*
+            On détruit le lecteur précédent.
+        */
+
+        if (youtubePlayer) {
+
+            youtubePlayer.destroy();
+
+            youtubePlayer = null;
+
+        }
+
+        musicScreen.style.display = "none";
+
+        scannerScreen.style.display = "block";
+
+        result.style.display = "none";
+
+        scanButton.style.display = "inline-block";
+
+    });
+
+
+    /*
+        FERMER LE SCANNER
+    */
+
     stopButton.addEventListener("click", async () => {
 
         if (scanner) {
 
             try {
+
                 await scanner.stop();
-            } catch (error) {
+
+            }
+
+            catch (error) {
+
                 console.log(error);
+
             }
 
             scanner = null;
+
         }
 
         reader.style.display = "none";
+
         stopButton.style.display = "none";
-        result.style.display = "none";
+
         scanButton.style.display = "inline-block";
 
     });
