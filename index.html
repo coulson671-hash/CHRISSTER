@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Geekster</title>
+
+    <!-- Lecteur QR -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
     <style>
         * {
@@ -51,11 +55,20 @@
             cursor: pointer;
         }
 
-        #camera {
-            display: none;
+        #reader {
             width: 100%;
-            margin-top: 25px;
+            max-width: 400px;
+            margin: 25px auto 0;
             border-radius: 15px;
+            overflow: hidden;
+            display: none;
+        }
+
+        #result {
+            margin-top: 25px;
+            font-size: 20px;
+            font-weight: bold;
+            display: none;
         }
 
         #stop {
@@ -68,72 +81,123 @@
 
 <body>
 
-    <div class="container">
+<div class="container">
 
-        <h1>GEEKSTER</h1>
+    <h1>GEEKSTER</h1>
 
-        <div class="subtitle">
-            Votre jeu musical geek
-        </div>
-
-        <button id="scanButton">
-            📷 SCANNER UNE CARTE
-        </button>
-
-        <video id="camera" autoplay playsinline></video>
-
-        <button id="stop">
-            ✕ FERMER LA CAMÉRA
-        </button>
-
+    <div class="subtitle">
+        Votre jeu musical geek
     </div>
 
-    <script>
-        const scanButton = document.getElementById("scanButton");
-        const camera = document.getElementById("camera");
-        const stopButton = document.getElementById("stop");
+    <button id="scanButton">
+        📷 SCANNER UNE CARTE
+    </button>
 
-        let stream = null;
+    <div id="reader"></div>
 
-        scanButton.addEventListener("click", async () => {
+    <div id="result"></div>
+
+    <button id="stop">
+        ✕ FERMER LE SCANNER
+    </button>
+
+</div>
+
+
+<script>
+
+    let scanner = null;
+
+    const scanButton = document.getElementById("scanButton");
+    const stopButton = document.getElementById("stop");
+    const reader = document.getElementById("reader");
+    const result = document.getElementById("result");
+
+
+    // Quand on appuie sur SCANNER
+    scanButton.addEventListener("click", async () => {
+
+        scanButton.style.display = "none";
+        reader.style.display = "block";
+        stopButton.style.display = "inline-block";
+        result.style.display = "none";
+
+        scanner = new Html5Qrcode("reader");
+
+        try {
+
+            await scanner.start(
+                { facingMode: "environment" },
+
+                {
+                    fps: 10,
+                    qrbox: {
+                        width: 250,
+                        height: 250
+                    }
+                },
+
+                (decodedText) => {
+
+                    // QR détecté !
+                    console.log("QR détecté :", decodedText);
+
+                    result.innerHTML =
+                        "✅ CARTE RECONNUE<br><br>" +
+                        "<small>" + decodedText + "</small>";
+
+                    result.style.display = "block";
+
+                    // On arrête temporairement le scanner
+                    scanner.stop();
+
+                    reader.style.display = "none";
+                    stopButton.style.display = "none";
+
+                },
+
+                (errorMessage) => {
+                    // Rien à faire si aucun QR n'est encore détecté
+                }
+
+            );
+
+        } catch (error) {
+
+            console.error(error);
+
+            result.innerHTML =
+                "❌ Impossible d'utiliser la caméra.";
+
+            result.style.display = "block";
+
+        }
+
+    });
+
+
+    // Bouton fermer
+    stopButton.addEventListener("click", async () => {
+
+        if (scanner) {
 
             try {
-
-                stream = await navigator.mediaDevices.getUserMedia({
-                    video: {
-                        facingMode: "environment"
-                    },
-                    audio: false
-                });
-
-                camera.srcObject = stream;
-
-                camera.style.display = "block";
-                stopButton.style.display = "inline-block";
-                scanButton.style.display = "none";
-
+                await scanner.stop();
             } catch (error) {
-
-                alert("Impossible d'accéder à la caméra. Vérifie que tu as autorisé l'accès.");
-
-                console.error(error);
+                console.log(error);
             }
 
-        });
+            scanner = null;
+        }
 
-        stopButton.addEventListener("click", () => {
+        reader.style.display = "none";
+        stopButton.style.display = "none";
+        result.style.display = "none";
+        scanButton.style.display = "inline-block";
 
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
-                stream = null;
-            }
+    });
 
-            camera.style.display = "none";
-            stopButton.style.display = "none";
-            scanButton.style.display = "inline-block";
-
-        });
-    </script>
+</script>
 
 </body>
 </html>
