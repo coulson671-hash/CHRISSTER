@@ -22,6 +22,8 @@
         }
 
         .container {
+            width: 100%;
+            max-width: 500px;
             text-align: center;
             padding: 30px;
         }
@@ -34,7 +36,7 @@
 
         .subtitle {
             color: #aaa;
-            margin-bottom: 50px;
+            margin-bottom: 40px;
             font-size: 18px;
         }
 
@@ -49,8 +51,17 @@
             cursor: pointer;
         }
 
-        button:hover {
-            background: #ff1a25;
+        #camera {
+            display: none;
+            width: 100%;
+            margin-top: 25px;
+            border-radius: 15px;
+        }
+
+        #stop {
+            display: none;
+            margin-top: 20px;
+            background: #333;
         }
     </style>
 </head>
@@ -65,11 +76,64 @@
             Votre jeu musical geek
         </div>
 
-        <button>
+        <button id="scanButton">
             📷 SCANNER UNE CARTE
         </button>
 
+        <video id="camera" autoplay playsinline></video>
+
+        <button id="stop">
+            ✕ FERMER LA CAMÉRA
+        </button>
+
     </div>
+
+    <script>
+        const scanButton = document.getElementById("scanButton");
+        const camera = document.getElementById("camera");
+        const stopButton = document.getElementById("stop");
+
+        let stream = null;
+
+        scanButton.addEventListener("click", async () => {
+
+            try {
+
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: "environment"
+                    },
+                    audio: false
+                });
+
+                camera.srcObject = stream;
+
+                camera.style.display = "block";
+                stopButton.style.display = "inline-block";
+                scanButton.style.display = "none";
+
+            } catch (error) {
+
+                alert("Impossible d'accéder à la caméra. Vérifie que tu as autorisé l'accès.");
+
+                console.error(error);
+            }
+
+        });
+
+        stopButton.addEventListener("click", () => {
+
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+
+            camera.style.display = "none";
+            stopButton.style.display = "none";
+            scanButton.style.display = "inline-block";
+
+        });
+    </script>
 
 </body>
 </html>
