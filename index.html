@@ -1,380 +1,407 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>Geekster</title>
 
     <!-- Lecteur QR -->
-    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-
-    <!-- Lecteur YouTube -->
-    <script src="https://www.youtube.com/iframe_api"></script>
+    <script
+        src="https://unpkg.com/html5-qrcode"
+        type="text/javascript">
+    </script>
 
     <style>
+
         * {
             box-sizing: border-box;
         }
 
         body {
+
             margin: 0;
+
             min-height: 100vh;
+
             background: #111;
+
             color: white;
+
             font-family: Arial, sans-serif;
+
             display: flex;
-            align-items: center;
+
             justify-content: center;
+
+            align-items: center;
         }
+
 
         .container {
+
             width: 100%;
+
             max-width: 500px;
+
+            padding: 25px;
+
             text-align: center;
-            padding: 30px;
         }
 
+
         h1 {
-            font-size: 52px;
+
+            font-size: 48px;
+
             margin: 0 0 10px;
+
             letter-spacing: 4px;
         }
 
+
         .subtitle {
+
             color: #aaa;
-            margin-bottom: 40px;
-            font-size: 18px;
+
+            margin-bottom: 35px;
+
+            font-size: 17px;
         }
 
+
         button {
-            background: #e50914;
-            color: white;
+
             border: none;
+
             border-radius: 12px;
-            padding: 18px 35px;
-            font-size: 20px;
+
+            padding: 17px 28px;
+
+            font-size: 19px;
+
             font-weight: bold;
+
+            color: white;
+
+            background: #e50914;
+
             cursor: pointer;
         }
 
-        #reader {
-            width: 100%;
-            max-width: 400px;
-            margin: 25px auto 0;
-            border-radius: 15px;
-            overflow: hidden;
-            display: none;
+
+        button:active {
+
+            transform: scale(0.97);
         }
 
-        #result {
-            margin-top: 25px;
-            font-size: 22px;
-            font-weight: bold;
+
+        #reader {
+
+            width: 100%;
+
+            max-width: 400px;
+
+            margin: 25px auto;
+
             display: none;
+
+            overflow: hidden;
+
+            border-radius: 15px;
         }
+
+
+        #stopButton {
+
+            display: none;
+
+            background: #333;
+
+            margin-top: 10px;
+        }
+
 
         #musicScreen {
+
             display: none;
         }
 
-        #player {
+
+        #musicTitle {
+
+            font-size: 24px;
+
+            font-weight: bold;
+
+            margin-bottom: 20px;
+        }
+
+
+        #youtubePlayer {
+
             width: 100%;
-            margin-top: 25px;
+
+            aspect-ratio: 16 / 9;
+
+            border-radius: 12px;
+
+            overflow: hidden;
+
+            background: #000;
+
+            margin-bottom: 25px;
         }
 
-        #stop {
-            display: none;
-            margin-top: 20px;
-            background: #333;
+
+        #youtubePlayer iframe {
+
+            width: 100%;
+
+            height: 100%;
+
+            border: 0;
         }
 
-        #scanAgain {
+
+        #nextButton {
+
             display: none;
-            margin-top: 20px;
         }
+
     </style>
+
 </head>
+
 
 <body>
 
+
 <div class="container">
 
-    <h1>GEEKSTER</h1>
 
-    <div class="subtitle">
-        Votre jeu musical geek
-    </div>
+    <!-- ========================= -->
+    <!-- ÉCRAN D'ACCUEIL -->
+    <!-- ========================= -->
 
-    <!-- Écran scanner -->
+    <div id="homeScreen">
 
-    <div id="scannerScreen">
+        <h1>GEEKSTER</h1>
+
+        <div class="subtitle">
+
+            Votre jeu musical geek
+
+        </div>
+
 
         <button id="scanButton">
+
             📷 SCANNER UNE CARTE
+
         </button>
+
 
         <div id="reader"></div>
 
-        <button id="stop">
+
+        <button id="stopButton">
+
             ✕ FERMER LE SCANNER
+
         </button>
 
     </div>
 
 
-    <!-- Écran musique -->
+
+    <!-- ========================= -->
+    <!-- ÉCRAN MUSIQUE -->
+    <!-- ========================= -->
 
     <div id="musicScreen">
 
-        <div id="result">
+
+        <div id="musicTitle">
+
             🎵 MUSIQUE PRÊTE
+
         </div>
 
-        <div id="player">     <iframe         width="100%"         height="220"         src="https://www.youtube.com/embed/UtgHZaq0EGs"         title="Lecteur musical"         frameborder="0"         allow="autoplay; encrypted-media"         allowfullscreen>     </iframe> </div>
 
-        <button id="scanAgain">
+        <!--
+            Le lecteur YouTube sera placé ici
+        -->
+
+        <div id="youtubePlayer"></div>
+
+
+        <button id="nextButton">
+
             📷 CARTE SUIVANTE
+
         </button>
 
+
     </div>
+
 
 </div>
 
 
+
 <script>
 
-    let scanner = null;
-    let youtubePlayer = null;
 
-    /*
-        ID YOUTUBE DE LA CARTE
-        001
-
-        Pour l'instant :
-        Song of Storms
-
-        IMPORTANT :
-        Remplace cette valeur par l'ID de ta vidéo YouTube.
-
-        Exemple :
-        https://www.youtube.com/watch?v=ABC123XYZ
-
-        L'ID serait :
-        ABC123XYZ
-    */
-
-    const songOfStormsID = "REMPLACE_MOI";
+/* ==========================================
+   VARIABLES
+   ========================================== */
 
 
-    const scanButton = document.getElementById("scanButton");
-    const stopButton = document.getElementById("stop");
-    const reader = document.getElementById("reader");
-
-    const scannerScreen = document.getElementById("scannerScreen");
-    const musicScreen = document.getElementById("musicScreen");
-
-    const result = document.getElementById("result");
-    const scanAgain = document.getElementById("scanAgain");
+let qrScanner = null;
 
 
-    /*
-        YouTube prépare son lecteur
-    */
+/*
+    Notre première musique de test.
 
-    function onYouTubeIframeAPIReady() {
+    Song of Storms :
 
-        console.log("YouTube prêt.");
+    https://youtu.be/UtgHZaq0EGs
 
-    }
+    L'identifiant est :
 
-
-    /*
-        Lancer le scanner
-    */
-
-    scanButton.addEventListener("click", async () => {
-
-        scanButton.style.display = "none";
-        reader.style.display = "block";
-        stopButton.style.display = "inline-block";
-
-        scanner = new Html5Qrcode("reader");
-
-        try {
-
-            await scanner.start(
-
-                { facingMode: "environment" },
-
-                {
-                    fps: 10,
-
-                    qrbox: {
-                        width: 250,
-                        height: 250
-                    }
-
-                },
-
-                async (decodedText) => {
-
-                    console.log("QR détecté :", decodedText);
-
-                    /*
-                        QR détecté !
-                        On arrête immédiatement le scanner.
-                    */
-
-                    await scanner.stop();
-
-                    scanner = null;
-
-                    reader.style.display = "none";
-                    stopButton.style.display = "none";
-
-                    scannerScreen.style.display = "none";
-                    musicScreen.style.display = "block";
-
-                    result.style.display = "block";
-
-                    scanAgain.style.display = "none";
-
-                    /*
-                        Pour l'instant, TOUS les QR
-                        lancent Song of Storms.
-
-                        Plus tard :
-                        QR 001 → Song of Storms
-                        QR 002 → autre musique
-                        QR 003 → autre musique
-                    */
-
-                    lancerMusique(songOfStormsID);
-
-                },
-
-                (errorMessage) => {
-
-                    // Rien à faire lorsqu'aucun QR
-                    // n'est détecté.
-
-                }
-
-            );
-
-        }
-
-        catch (error) {
-
-            console.error(error);
-
-            alert(
-                "Impossible d'utiliser la caméra."
-            );
-
-        }
-
-    });
+    UtgHZaq0EGs
+*/
 
 
-    /*
-        Création du lecteur YouTube
-    */
+const SONG_OF_STORMS = "UtgHZaq0EGs";
 
-    function lancerMusique(videoID) {
 
-        youtubePlayer = new YT.Player(
-            "player",
+const scanButton =
+    document.getElementById("scanButton");
+
+
+const stopButton =
+    document.getElementById("stopButton");
+
+
+const reader =
+    document.getElementById("reader");
+
+
+const homeScreen =
+    document.getElementById("homeScreen");
+
+
+const musicScreen =
+    document.getElementById("musicScreen");
+
+
+const youtubePlayer =
+    document.getElementById("youtubePlayer");
+
+
+const nextButton =
+    document.getElementById("nextButton");
+
+
+
+/* ==========================================
+   LANCER LE SCANNER
+   ========================================== */
+
+
+scanButton.addEventListener("click", async () => {
+
+
+    scanButton.style.display = "none";
+
+    stopButton.style.display = "inline-block";
+
+    reader.style.display = "block";
+
+
+    qrScanner = new Html5Qrcode("reader");
+
+
+    try {
+
+
+        await qrScanner.start(
+
+            {
+                facingMode: "environment"
+            },
 
             {
 
-                height: "220",
+                fps: 10,
 
-                width: "100%",
-
-                videoId: videoID,
-
-                playerVars: {
-
-                    autoplay: 0,
-
-                    controls: 1,
-
-                    rel: 0,
-
-                    modestbranding: 1
-
-                },
-
-                events: {
-
-                    onReady: function(event) {
-
-                        console.log("Lecteur YouTube prêt.");
-
-                    }
-
+                qrbox: {
+                    width: 250,
+                    height: 250
                 }
 
+            },
+
+
+            async (decodedText) => {
+
+
+                console.log(
+                    "QR détecté :",
+                    decodedText
+                );
+
+
+                /*
+                    On arrête le scanner
+                */
+
+                await arreterScanner();
+
+
+                /*
+                    Pour l'instant,
+                    n'importe quelle carte
+                    lance Song of Storms.
+                */
+
+                afficherMusique(
+                    SONG_OF_STORMS
+                );
+
+            },
+
+
+            (errorMessage) => {
+
+                /*
+                    Aucun QR détecté.
+                    On ne fait rien.
+                */
+
             }
+
         );
+
 
     }
 
-
-    /*
-        CARTE SUIVANTE
-    */
-
-    scanAgain.addEventListener("click", () => {
-
-        /*
-            On détruit le lecteur précédent.
-        */
-
-        if (youtubePlayer) {
-
-            youtubePlayer.destroy();
-
-            youtubePlayer = null;
-
-        }
-
-        musicScreen.style.display = "none";
-
-        scannerScreen.style.display = "block";
-
-        result.style.display = "none";
-
-        scanButton.style.display = "inline-block";
-
-    });
+    catch (error) {
 
 
-    /*
-        FERMER LE SCANNER
-    */
+        console.error(error);
 
-    stopButton.addEventListener("click", async () => {
 
-        if (scanner) {
+        alert(
+            "Impossible d'utiliser la caméra."
+        );
 
-            try {
-
-                await scanner.stop();
-
-            }
-
-            catch (error) {
-
-                console.log(error);
-
-            }
-
-            scanner = null;
-
-        }
 
         reader.style.display = "none";
 
@@ -382,9 +409,170 @@
 
         scanButton.style.display = "inline-block";
 
-    });
+    }
+
+});
+
+
+
+/* ==========================================
+   ARRÊTER LE SCANNER
+   ========================================== */
+
+
+async function arreterScanner() {
+
+
+    if (qrScanner) {
+
+
+        try {
+
+            await qrScanner.stop();
+
+        }
+
+        catch (error) {
+
+            console.log(error);
+
+        }
+
+
+        qrScanner = null;
+
+    }
+
+
+    reader.style.display = "none";
+
+    stopButton.style.display = "none";
+
+}
+
+
+
+/* ==========================================
+   AFFICHER LA MUSIQUE
+   ========================================== */
+
+
+function afficherMusique(videoID) {
+
+
+    /*
+        On cache l'écran du scanner
+    */
+
+    homeScreen.style.display = "none";
+
+
+    /*
+        On affiche l'écran musique
+    */
+
+    musicScreen.style.display = "block";
+
+
+    /*
+        On crée directement
+        un lecteur YouTube.
+
+        Pas d'API YouTube.
+        Pas de JavaScript compliqué.
+    */
+
+
+    youtubePlayer.innerHTML = `
+
+        <iframe
+
+            src="https://www.youtube.com/embed/${videoID}"
+
+            title="Lecteur musical"
+
+            allow="
+                autoplay;
+                encrypted-media;
+                picture-in-picture
+            "
+
+            allowfullscreen>
+
+        </iframe>
+
+    `;
+
+
+    /*
+        On affiche le bouton
+        pour scanner une nouvelle carte.
+    */
+
+    nextButton.style.display = "inline-block";
+
+}
+
+
+
+/* ==========================================
+   CARTE SUIVANTE
+   ========================================== */
+
+
+nextButton.addEventListener(
+    "click",
+    () => {
+
+
+        /*
+            On supprime le lecteur
+        */
+
+        youtubePlayer.innerHTML = "";
+
+
+        /*
+            On revient à l'écran
+            du scanner
+        */
+
+        musicScreen.style.display = "none";
+
+        homeScreen.style.display = "block";
+
+
+        scanButton.style.display = "inline-block";
+
+        nextButton.style.display = "none";
+
+    }
+);
+
+
+
+/* ==========================================
+   FERMER LE SCANNER
+   ========================================== */
+
+
+stopButton.addEventListener(
+    "click",
+    async () => {
+
+
+        await arreterScanner();
+
+
+        scanButton.style.display = "inline-block";
+
+    }
+);
+
 
 </script>
 
+
 </body>
+
 </html>
