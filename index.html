@@ -15,221 +15,107 @@
         type="text/javascript">
     </script>
 
-
     <style>
 
         * {
             box-sizing: border-box;
         }
 
-
         body {
-
             margin: 0;
-
             min-height: 100vh;
-
             background: #111;
-
             color: white;
-
             font-family: Arial, sans-serif;
 
             display: flex;
-
             justify-content: center;
-
             align-items: center;
         }
 
-
         .container {
-
             width: 100%;
-
             max-width: 500px;
-
             padding: 25px;
-
             text-align: center;
         }
 
-
         h1 {
-
             font-size: 48px;
-
             margin: 0 0 10px;
-
             letter-spacing: 4px;
         }
 
-
         .subtitle {
-
             color: #aaa;
-
             margin-bottom: 35px;
-
             font-size: 17px;
         }
 
-
         button {
-
             border: none;
-
             border-radius: 12px;
-
             padding: 17px 28px;
-
             font-size: 19px;
-
             font-weight: bold;
-
             color: white;
-
             background: #e50914;
-
             cursor: pointer;
-
             margin: 8px;
         }
 
-
         button:active {
-
             transform: scale(0.97);
         }
 
-
         .secondary {
-
             background: #333;
         }
 
-
         #reader {
-
             width: 100%;
-
             max-width: 400px;
-
             margin: 25px auto;
-
             display: none;
-
             overflow: hidden;
-
             border-radius: 15px;
         }
 
-
         #stopButton {
-
             display: none;
-
             background: #333;
-
-            margin-top: 10px;
         }
 
-
-        #musicScreen {
-
+        #diagnosticScreen {
             display: none;
         }
 
+        #qrContent {
+            margin: 25px 0;
 
-        #readyScreen {
+            padding: 20px;
 
-            display: block;
-        }
-
-
-        #readyIcon {
-
-            font-size: 65px;
-
-            margin-bottom: 10px;
-        }
-
-
-        #readyText {
-
-            font-size: 26px;
-
-            font-weight: bold;
-
-            margin-bottom: 30px;
-        }
-
-
-        /*
-            Le lecteur est caché
-            tant que le joueur n'a
-            pas appuyé sur LANCER.
-        */
-
-        #youtubePlayer {
-
-            width: 100%;
-
-            aspect-ratio: 16 / 9;
+            background: #222;
 
             border-radius: 12px;
 
-            overflow: hidden;
+            word-break: break-all;
 
-            background: #000;
+            text-align: left;
 
-            display: none;
+            font-family: monospace;
 
-            margin-bottom: 20px;
+            font-size: 14px;
+
+            line-height: 1.5;
+
+            max-height: 300px;
+
+            overflow-y: auto;
         }
 
-
-        #youtubePlayer iframe {
-
-            width: 100%;
-
-            height: 100%;
-
-            border: 0;
-        }
-
-
-        #playButton {
-
-            background: #e50914;
-
-            font-size: 22px;
-
-            padding: 20px 35px;
-        }
-
-
-        #nextButton {
-
-            display: none;
-
-            background: #333;
-        }
-
-
-        #errorScreen {
-
-            display: none;
-        }
-
-
-        #errorText {
-
-            color: #ff5555;
-
-            font-size: 20px;
-
-            margin-bottom: 25px;
+        .success {
+            color: #4cff88;
         }
 
     </style>
@@ -243,117 +129,61 @@
 <div class="container">
 
 
-    <!-- ================================= -->
+    <!-- ============================= -->
     <!-- ACCUEIL -->
-    <!-- ================================= -->
+    <!-- ============================= -->
 
     <div id="homeScreen">
 
-
         <h1>GEEKSTER</h1>
 
-
         <div class="subtitle">
-
-            Votre jeu musical geek
-
+            Diagnostic QR
         </div>
 
-
         <button id="scanButton">
-
             📷 SCANNER UNE CARTE
-
         </button>
-
 
         <div id="reader"></div>
 
-
         <button id="stopButton">
-
             ✕ FERMER LE SCANNER
-
         </button>
-
 
     </div>
 
 
+    <!-- ============================= -->
+    <!-- DIAGNOSTIC -->
+    <!-- ============================= -->
 
-    <!-- ================================= -->
-    <!-- MUSIQUE PRÊTE -->
-    <!-- ================================= -->
+    <div id="diagnosticScreen">
 
-    <div id="musicScreen">
+        <div class="success">
 
-
-        <div id="readyScreen">
-
-
-            <div id="readyIcon">
-
-                🎵
-
-            </div>
-
-
-            <div id="readyText">
-
-                MUSIQUE PRÊTE
-
-            </div>
-
-
-            <button id="playButton">
-
-                ▶️ LANCER LA MUSIQUE
-
-            </button>
-
+            ✅ QR DÉTECTÉ
 
         </div>
 
 
+        <h2>
 
-        <!-- Lecteur YouTube -->
+            Contenu exact du QR
 
-        <div id="youtubePlayer"></div>
+        </h2>
+
+
+        <div id="qrContent"></div>
 
 
         <button
-            id="nextButton"
+            id="scanAgainButton"
             class="secondary">
 
-            📷 CARTE SUIVANTE
+            📷 SCANNER UNE AUTRE CARTE
 
         </button>
-
-
-    </div>
-
-
-
-    <!-- ================================= -->
-    <!-- ERREUR -->
-    <!-- ================================= -->
-
-    <div id="errorScreen">
-
-
-        <div id="errorText">
-
-            ❌ CARTE NON RECONNUE
-
-        </div>
-
-
-        <button id="errorBackButton">
-
-            📷 RÉESSAYER
-
-        </button>
-
 
     </div>
 
@@ -366,88 +196,58 @@
 
 
 /* ==========================================
-   BASE DE DONNÉES GEEKSTER
-   ========================================== */
-
-
-/*
-    Pour l'instant nous avons seulement
-    notre première carte.
-
-    On pourra ajouter :
-
-    "002": "ID_YOUTUBE",
-    "003": "ID_YOUTUBE",
-
-    etc.
-*/
-
-
-const cartes = {
-
-    "001": "UtgHZaq0EGs"
-
-};
-
-
-
-/* ==========================================
    VARIABLES
    ========================================== */
 
 
 let qrScanner = null;
 
-let currentVideoID = null;
-
 
 const scanButton =
-    document.getElementById("scanButton");
+    document.getElementById(
+        "scanButton"
+    );
 
 
 const stopButton =
-    document.getElementById("stopButton");
+    document.getElementById(
+        "stopButton"
+    );
 
 
 const reader =
-    document.getElementById("reader");
+    document.getElementById(
+        "reader"
+    );
 
 
 const homeScreen =
-    document.getElementById("homeScreen");
+    document.getElementById(
+        "homeScreen"
+    );
 
 
-const musicScreen =
-    document.getElementById("musicScreen");
+const diagnosticScreen =
+    document.getElementById(
+        "diagnosticScreen"
+    );
 
 
-const readyScreen =
-    document.getElementById("readyScreen");
+const qrContent =
+    document.getElementById(
+        "qrContent"
+    );
 
 
-const playButton =
-    document.getElementById("playButton");
-
-
-const youtubePlayer =
-    document.getElementById("youtubePlayer");
-
-
-const nextButton =
-    document.getElementById("nextButton");
-
-
-const errorScreen =
-    document.getElementById("errorScreen");
-
-
-const errorBackButton =
-    document.getElementById("errorBackButton");
+const scanAgainButton =
+    document.getElementById(
+        "scanAgainButton"
+    );
 
 
 
 /* ==========================================
-   SCANNER
+   LANCER LE SCANNER
    ========================================== */
 
 
@@ -457,21 +257,25 @@ scanButton.addEventListener(
 );
 
 
-
 async function lancerScanner() {
 
 
-    homeScreen.style.display = "block";
+    scanButton.style.display =
+        "none";
 
-    scanButton.style.display = "none";
 
-    stopButton.style.display = "inline-block";
+    stopButton.style.display =
+        "inline-block";
 
-    reader.style.display = "block";
+
+    reader.style.display =
+        "block";
 
 
     qrScanner =
-        new Html5Qrcode("reader");
+        new Html5Qrcode(
+            "reader"
+        );
 
 
     try {
@@ -480,21 +284,17 @@ async function lancerScanner() {
         await qrScanner.start(
 
             {
-                facingMode: "environment"
+                facingMode:
+                    "environment"
             },
 
             {
-
                 fps: 10,
 
                 qrbox: {
-
                     width: 250,
-
                     height: 250
-
                 }
-
             },
 
 
@@ -502,7 +302,7 @@ async function lancerScanner() {
 
 
                 console.log(
-                    "QR détecté :",
+                    "QR DÉTECTÉ :",
                     decodedText
                 );
 
@@ -510,17 +310,18 @@ async function lancerScanner() {
                 await arreterScanner();
 
 
-                traiterQR(decodedText);
+                afficherDiagnostic(
+                    decodedText
+                );
 
             },
 
 
             (errorMessage) => {
 
-                /*
-                    Rien à faire si aucun QR
-                    n'est détecté.
-                */
+                // Rien à faire
+                // tant qu'aucun QR
+                // n'est détecté.
 
             }
 
@@ -540,7 +341,7 @@ async function lancerScanner() {
         );
 
 
-        arreterScanner();
+        await arreterScanner();
 
     }
 
@@ -549,401 +350,34 @@ async function lancerScanner() {
 
 
 /* ==========================================
-   TRAITEMENT DU QR
+   AFFICHER LE CONTENU DU QR
    ========================================== */
 
 
-function traiterQR(decodedText) {
-
-
-    let videoID = null;
-
-
-    /*
-        --------------------------------------
-        CAS 1
-        QR GEEKSTER
-        --------------------------------------
-
-        Exemple :
-
-        GEEKSTER-001
-    */
-
-
-    const geeksterMatch =
-        decodedText.match(
-            /GEEKSTER-(\d+)/i
-        );
-
-
-    if (geeksterMatch) {
-
-
-        const numero =
-            geeksterMatch[1];
-
-
-        videoID =
-            cartes[numero];
-
-    }
-
-
-    /*
-        --------------------------------------
-        CAS 2
-        QR YOUTUBE
-        --------------------------------------
-
-        Exemple :
-
-        https://www.youtube.com/watch?v=XXXX
-
-        ou :
-
-        https://youtu.be/XXXX
-    */
-
-
-    if (!videoID) {
-
-        videoID =
-            extraireYouTubeID(decodedText);
-
-    }
-
-
-    /*
-        --------------------------------------
-        SI ON A TROUVÉ UNE MUSIQUE
-        --------------------------------------
-    */
-
-
-    if (videoID) {
-
-
-        currentVideoID =
-            videoID;
-
-
-        afficherMusique();
-
-
-        return;
-
-    }
-
-
-    /*
-        --------------------------------------
-        QR INCONNU
-        --------------------------------------
-    */
-
-
-    afficherErreur();
-
-}
-
-
-
-/* ==========================================
-   EXTRAIRE ID YOUTUBE
-   ========================================== */
-
-
-function extraireYouTubeID(url) {
-
-
-    try {
-
-
-        /*
-            Format :
-
-            youtube.com/watch?v=XXXX
-        */
-
-
-        if (
-            url.includes(
-                "youtube.com/watch"
-            )
-        ) {
-
-
-            const adresse =
-                new URL(url);
-
-
-            return adresse.searchParams.get(
-                "v"
-            );
-
-        }
-
-
-        /*
-            Format :
-
-            youtu.be/XXXX
-        */
-
-
-        if (
-            url.includes(
-                "youtu.be/"
-            )
-        ) {
-
-
-            const adresse =
-                new URL(url);
-
-
-            return adresse.pathname
-                .substring(1)
-                .split("/")[0];
-
-        }
-
-
-        /*
-            Format :
-
-            youtube.com/embed/XXXX
-        */
-
-
-        if (
-            url.includes(
-                "youtube.com/embed/"
-            )
-        ) {
-
-
-            return url
-                .split(
-                    "youtube.com/embed/"
-                )[1]
-                .split("?")[0];
-
-        }
-
-
-    }
-
-    catch (error) {
-
-        console.log(error);
-
-    }
-
-
-    return null;
-
-}
-
-
-
-/* ==========================================
-   AFFICHER MUSIQUE PRÊTE
-   ========================================== */
-
-
-function afficherMusique() {
+function afficherDiagnostic(
+    contenu
+) {
 
 
     homeScreen.style.display =
         "none";
 
 
-    errorScreen.style.display =
-        "none";
-
-
-    musicScreen.style.display =
+    diagnosticScreen.style.display =
         "block";
 
 
-    readyScreen.style.display =
-        "block";
+    /*
+        Affichage du contenu
+        EXACTEMENT comme le scanner
+        l'a reçu.
+    */
 
 
-    youtubePlayer.style.display =
-        "none";
-
-
-    youtubePlayer.innerHTML =
-        "";
-
-
-    playButton.style.display =
-        "inline-block";
-
-
-    nextButton.style.display =
-        "none";
+    qrContent.textContent =
+        contenu;
 
 }
-
-
-
-/* ==========================================
-   LANCER LA MUSIQUE
-   ========================================== */
-
-
-playButton.addEventListener(
-    "click",
-    () => {
-
-
-        if (!currentVideoID) {
-
-            return;
-
-        }
-
-
-        /*
-            On cache l'écran
-            "musique prête".
-        */
-
-
-        readyScreen.style.display =
-            "none";
-
-
-        youtubePlayer.style.display =
-            "block";
-
-
-        /*
-            On crée le lecteur YouTube
-            seulement maintenant.
-
-            Le clic de l'utilisateur
-            permet au navigateur
-            d'autoriser la lecture.
-        */
-
-
-        youtubePlayer.innerHTML = `
-
-            <iframe
-
-                src="https://www.youtube.com/embed/${currentVideoID}?autoplay=1&rel=0&modestbranding=1"
-
-                title="Geekster"
-
-                allow="autoplay; encrypted-media; picture-in-picture"
-
-                allowfullscreen>
-
-            </iframe>
-
-        `;
-
-
-        nextButton.style.display =
-            "inline-block";
-
-    }
-);
-
-
-
-/* ==========================================
-   CARTE SUIVANTE
-   ========================================== */
-
-
-nextButton.addEventListener(
-    "click",
-    () => {
-
-
-        currentVideoID = null;
-
-
-        youtubePlayer.innerHTML =
-            "";
-
-
-        youtubePlayer.style.display =
-            "none";
-
-
-        musicScreen.style.display =
-            "none";
-
-
-        homeScreen.style.display =
-            "block";
-
-
-        scanButton.style.display =
-            "inline-block";
-
-
-        nextButton.style.display =
-            "none";
-
-    }
-);
-
-
-
-/* ==========================================
-   ERREUR
-   ========================================== */
-
-
-function afficherErreur() {
-
-
-    homeScreen.style.display =
-        "none";
-
-
-    musicScreen.style.display =
-        "none";
-
-
-    errorScreen.style.display =
-        "block";
-
-}
-
-
-
-/* ==========================================
-   RETOUR APRÈS ERREUR
-   ========================================== */
-
-
-errorBackButton.addEventListener(
-    "click",
-    () => {
-
-
-        errorScreen.style.display =
-            "none";
-
-
-        homeScreen.style.display =
-            "block";
-
-
-        scanButton.style.display =
-            "inline-block";
-
-    }
-);
 
 
 
@@ -984,6 +418,32 @@ async function arreterScanner() {
         "none";
 
 }
+
+
+
+/* ==========================================
+   SCANNER UNE AUTRE CARTE
+   ========================================== */
+
+
+scanAgainButton.addEventListener(
+    "click",
+    () => {
+
+
+        diagnosticScreen.style.display =
+            "none";
+
+
+        homeScreen.style.display =
+            "block";
+
+
+        scanButton.style.display =
+            "inline-block";
+
+    }
+);
 
 
 
