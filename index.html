@@ -2,1383 +2,645 @@
 <html lang="fr">
 
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0">
-
-    <title>Geekster</title>
-
-
-    <!-- =====================================
-         LECTEUR QR
-    ====================================== -->
-
-    <script
-        src="https://unpkg.com/html5-qrcode"
-        type="text/javascript">
-    </script>
-
-
-    <style>
-
-        * {
-            box-sizing: border-box;
-        }
-
-
-        body {
-
-            margin: 0;
-
-            min-height: 100vh;
-
-            background: #111;
-
-            color: white;
-
-            font-family: Arial, sans-serif;
-
-            display: flex;
-
-            justify-content: center;
-
-            align-items: center;
-        }
-
-
-        .container {
-
-            width: 100%;
-
-            max-width: 500px;
-
-            padding: 25px;
-
-            text-align: center;
-        }
-
-
-        h1 {
-
-            font-size: 48px;
-
-            margin: 0 0 10px;
-
-            letter-spacing: 4px;
-        }
-
-
-        .subtitle {
-
-            color: #aaa;
-
-            margin-bottom: 35px;
-
-            font-size: 17px;
-        }
-
-
-        button {
-
-            border: none;
-
-            border-radius: 12px;
-
-            padding: 17px 28px;
-
-            font-size: 18px;
-
-            font-weight: bold;
-
-            color: white;
-
-            background: #e50914;
-
-            cursor: pointer;
-
-            margin: 8px;
-        }
-
-
-        button:active {
-
-            transform: scale(0.97);
-        }
-
-
-        .secondary {
-
-            background: #333;
-        }
-
-
-        .youtube {
-
-            background: #ff0000;
-        }
-
-
-        #reader {
-
-            width: 100%;
-
-            max-width: 400px;
-
-            margin: 25px auto;
-
-            display: none;
-
-            overflow: hidden;
-
-            border-radius: 15px;
-        }
-
-
-        #stopButton {
-
-            display: none;
-
-            background: #333;
-        }
-
-
-        /* =====================================
-           ÉCRANS
-        ====================================== */
-
-
-        #musicScreen,
-        #searchScreen,
-        #errorScreen {
-
-            display: none;
-        }
-
-
-        /* =====================================
-           MUSIQUE PRÊTE
-        ====================================== */
-
-
-        #readyIcon {
-
-            font-size: 65px;
-
-            margin-bottom: 10px;
-        }
-
-
-        #readyText {
-
-            font-size: 27px;
-
-            font-weight: bold;
-
-            margin-bottom: 30px;
-        }
-
-
-        /* =====================================
-           RECHERCHE
-        ====================================== */
-
-
-        #searchIcon {
-
-            font-size: 60px;
-
-            margin-bottom: 10px;
-        }
-
-
-        #searchTitle {
-
-            font-size: 25px;
-
-            font-weight: bold;
-
-            margin-bottom: 20px;
-        }
-
-
-        #searchQuery {
-
-            background: #222;
-
-            border-radius: 12px;
-
-            padding: 18px;
-
-            margin: 20px 0 25px;
-
-            font-size: 17px;
-
-            line-height: 1.5;
-
-            word-break: break-word;
-        }
-
-
-        .smallText {
-
-            color: #999;
-
-            font-size: 14px;
-
-            line-height: 1.5;
-
-            margin-bottom: 20px;
-        }
-
-
-        /* =====================================
-           LECTEUR YOUTUBE
-        ====================================== */
-
-
-        #youtubePlayer {
-
-            width: 100%;
-
-            aspect-ratio: 16 / 9;
-
-            border-radius: 12px;
-
-            overflow: hidden;
-
-            background: #000;
-
-            display: none;
-
-            margin-bottom: 20px;
-        }
-
-
-        #youtubePlayer iframe {
-
-            width: 100%;
-
-            height: 100%;
-
-            border: 0;
-        }
-
-
-        #nextButton {
-
-            display: none;
-
-            background: #333;
-        }
-
-
-        /* =====================================
-           ERREUR
-        ====================================== */
-
-
-        #errorTitle {
-
-            color: #ff5555;
-
-            font-size: 25px;
-
-            font-weight: bold;
-
-            margin-bottom: 20px;
-        }
-
-
-        #errorContent {
-
-            background: #222;
-
-            border-radius: 12px;
-
-            padding: 18px;
-
-            word-break: break-word;
-
-            font-family: monospace;
-
-            font-size: 13px;
-
-            margin-bottom: 25px;
-        }
-
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Geekster Gaming</title>
+
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #111;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+}
+
+.container {
+    max-width: 520px;
+    margin: auto;
+    padding: 25px 18px;
+}
+
+h1 {
+    font-size: 46px;
+    letter-spacing: 5px;
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    color: #aaa;
+    margin-bottom: 30px;
+}
+
+button {
+    border: none;
+    border-radius: 12px;
+    padding: 17px 25px;
+    margin: 8px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    background: #e50914;
+    color: white;
+}
+
+button.secondary {
+    background: #333;
+}
+
+button:hover {
+    opacity: 0.85;
+}
+
+.box {
+    background: #222;
+    border-radius: 15px;
+    padding: 25px;
+    margin: 20px 0;
+}
+
+.ready {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.ready-icon {
+    font-size: 55px;
+    margin-bottom: 10px;
+}
+
+.year {
+    font-size: 75px;
+    font-weight: bold;
+    color: #f5be32;
+    margin: 20px 0;
+}
+
+.music {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.game {
+    color: #ccc;
+    font-size: 18px;
+    margin-top: 10px;
+}
+
+#reader {
+    width: 100%;
+    margin: 20px auto;
+}
+
+#gameScreen,
+#revealScreen,
+#errorScreen,
+#searchScreen {
+    display: none;
+}
+
+</style>
 
 </head>
 
-
 <body>
-
 
 <div class="container">
 
+<h1>GEEKSTER</h1>
 
-    <!-- =====================================
-         ACCUEIL
-    ====================================== -->
-
-
-    <div id="homeScreen">
+<div class="subtitle">
+🎮 Gaming Edition
+</div>
 
 
-        <h1>GEEKSTER</h1>
+<!-- ACCUEIL -->
 
+<div id="homeScreen">
 
-        <div class="subtitle">
+    <div class="box">
 
-            Votre jeu musical geek
+        <h2>Prêt à jouer ?</h2>
 
-        </div>
+        <p>
+        Scanne le QR code d'une carte.
+        </p>
 
-
-        <button id="scanButton">
-
+        <button onclick="startScanner()">
             📷 SCANNER UNE CARTE
-
         </button>
-
-
-        <div id="reader"></div>
-
-
-        <button id="stopButton">
-
-            ✕ FERMER LE SCANNER
-
-        </button>
-
 
     </div>
 
-
-
-    <!-- =====================================
-         ÉCRAN MUSIQUE
-    ====================================== -->
-
-
-    <div id="musicScreen">
-
-
-        <div id="readyIcon">
-
-            🎵
-
-        </div>
-
-
-        <div id="readyText">
-
-            MUSIQUE PRÊTE
-
-        </div>
-
-
-        <button
-            id="playButton">
-
-            ▶️ LANCER LA MUSIQUE
-
-        </button>
-
-
-        <div id="youtubePlayer"></div>
-
-
-        <button
-            id="nextButton"
-            class="secondary">
-
-            📷 CARTE SUIVANTE
-
-        </button>
-
-
-    </div>
-
-
-
-    <!-- =====================================
-         ÉCRAN RECHERCHE
-    ====================================== -->
-
-
-    <div id="searchScreen">
-
-
-        <div id="searchIcon">
-
-            🔎
-
-        </div>
-
-
-        <div id="searchTitle">
-
-            RECHERCHE DÉTECTÉE
-
-        </div>
-
-
-        <div
-            class="smallText">
-
-            Cette carte contient une recherche
-            YouTube plutôt qu'une vidéo précise.
-
-        </div>
-
-
-        <div id="searchQuery"></div>
-
-
-        <button
-            id="searchButton"
-            class="youtube">
-
-            ▶️ RECHERCHER SUR YOUTUBE
-
-        </button>
-
-
-        <br>
-
-
-        <button
-            id="searchNextButton"
-            class="secondary">
-
-            📷 CARTE SUIVANTE
-
-        </button>
-
-
-    </div>
-
-
-
-    <!-- =====================================
-         ERREUR
-    ====================================== -->
-
-
-    <div id="errorScreen">
-
-
-        <div id="errorTitle">
-
-            ❌ CARTE NON RECONNUE
-
-        </div>
-
-
-        <div
-            id="errorContent">
-        </div>
-
-
-        <button
-            id="errorBackButton">
-
-            📷 RÉESSAYER
-
-        </button>
-
-
-    </div>
-
+    <div id="reader"></div>
 
 </div>
 
+
+<!-- CARTE RECONNUE -->
+
+<div id="gameScreen">
+
+    <div class="box">
+
+        <div class="ready-icon">
+            🎵
+        </div>
+
+        <div class="ready">
+            MUSIQUE PRÊTE
+        </div>
+
+        <p>
+        Tu peux lancer la musique.
+        </p>
+
+    </div>
+
+    <button onclick="launchMusic()">
+        ▶️ LANCER LA MUSIQUE
+    </button>
+
+    <br>
+
+    <button class="secondary" onclick="revealCard()">
+        👀 RÉVÉLER LA CARTE
+    </button>
+
+    <br>
+
+    <button class="secondary" onclick="nextCard()">
+        📷 CARTE SUIVANTE
+    </button>
+
+</div>
+
+
+<!-- RECHERCHE YOUTUBE -->
+
+<div id="searchScreen">
+
+    <div class="box">
+
+        <div class="ready-icon">
+            🔎
+        </div>
+
+        <h2>Musique trouvée</h2>
+
+        <p id="searchText"></p>
+
+        <p>
+        YouTube va s'ouvrir pour lancer la musique.
+        </p>
+
+    </div>
+
+    <button onclick="openYouTube()">
+        ▶️ OUVRIR YOUTUBE
+    </button>
+
+    <br>
+
+    <button class="secondary" onclick="revealCard()">
+        👀 RÉVÉLER LA CARTE
+    </button>
+
+</div>
+
+
+<!-- RÉVÉLATION -->
+
+<div id="revealScreen">
+
+    <div class="box">
+
+        <h2>🎉 CARTE</h2>
+
+        <div class="music" id="musicTitle"></div>
+
+        <div class="game" id="gameTitle"></div>
+
+        <div class="year" id="cardYear"></div>
+
+    </div>
+
+    <button onclick="nextCard()">
+        📷 CARTE SUIVANTE
+    </button>
+
+</div>
+
+
+<!-- ERREUR -->
+
+<div id="errorScreen">
+
+    <div class="box">
+
+        <h2>❌ CARTE NON RECONNUE</h2>
+
+        <p id="errorText"></p>
+
+    </div>
+
+    <button onclick="nextCard()">
+        RETOUR
+    </button>
+
+</div>
+
+</div>
 
 
 <script>
 
 
-/* ==========================================
-   BASE DE DONNÉES GEEKSTER
-   ========================================== */
+/* =====================================================
+   BASE DES 20 CARTES
+===================================================== */
 
+const cards = {
 
-/*
-    Nos propres cartes.
+    "001": {
+        music: "Korobeiniki",
+        game: "Tetris",
+        year: 1984
+    },
 
-    Exemple :
+    "002": {
+        music: "Ground Theme",
+        game: "Super Mario Bros.",
+        year: 1985
+    },
 
-    GEEKSTER-001
+    "003": {
+        music: "Main Theme",
+        game: "The Legend of Zelda",
+        year: 1986
+    },
 
-    devient :
+    "004": {
+        music: "Brinstar",
+        game: "Metroid",
+        year: 1986
+    },
 
-    Song of Storms
-*/
+    "005": {
+        music: "Main Theme",
+        game: "Final Fantasy",
+        year: 1987
+    },
 
+    "006": {
+        music: "Dr. Wily Stage 1",
+        game: "Mega Man 2",
+        year: 1988
+    },
 
-const cartes = {
+    "007": {
+        music: "Main Theme",
+        game: "Prince of Persia",
+        year: 1989
+    },
 
-    "001": "UtgHZaq0EGs"
+    "008": {
+        music: "Main Theme",
+        game: "SimCity",
+        year: 1989
+    },
+
+    "009": {
+        music: "Overworld Theme",
+        game: "Super Mario World",
+        year: 1990
+    },
+
+    "010": {
+        music: "Opening Theme",
+        game: "The Secret of Monkey Island",
+        year: 1990
+    },
+
+    "011": {
+        music: "Green Hill Zone",
+        game: "Sonic the Hedgehog",
+        year: 1991
+    },
+
+    "012": {
+        music: "Guile Theme",
+        game: "Street Fighter II",
+        year: 1991
+    },
+
+    "013": {
+        music: "Main Theme",
+        game: "Final Fantasy IV",
+        year: 1991
+    },
+
+    "014": {
+        music: "Stage 1",
+        game: "Super Castlevania IV",
+        year: 1991
+    },
+
+    "015": {
+        music: "Dark World",
+        game: "The Legend of Zelda: A Link to the Past",
+        year: 1991
+    },
+
+    "016": {
+        music: "Main Theme",
+        game: "Mortal Kombat",
+        year: 1992
+    },
+
+    "017": {
+        music: "Rainbow Road",
+        game: "Super Mario Kart",
+        year: 1992
+    },
+
+    "018": {
+        music: "At Doom's Gate",
+        game: "Doom",
+        year: 1993
+    },
+
+    "019": {
+        music: "Main Theme",
+        game: "Myst",
+        year: 1993
+    },
+
+    "020": {
+        music: "Main Theme",
+        game: "Star Fox",
+        year: 1993
+    }
 
 };
 
 
-
-/* ==========================================
+/* =====================================================
    VARIABLES
-   ========================================== */
+===================================================== */
+
+let scanner = null;
+
+let currentCard = null;
+
+let youtubeSearchURL = "";
 
 
-let qrScanner = null;
+/* =====================================================
+   AFFICHAGE DES ECRANS
+===================================================== */
 
-let currentVideoID = null;
+function showScreen(screen) {
 
-let currentSearchURL = null;
+    document.getElementById("homeScreen").style.display = "none";
+    document.getElementById("gameScreen").style.display = "none";
+    document.getElementById("searchScreen").style.display = "none";
+    document.getElementById("revealScreen").style.display = "none";
+    document.getElementById("errorScreen").style.display = "none";
 
-
-
-/* ==========================================
-   ÉLÉMENTS HTML
-   ========================================== */
-
-
-const homeScreen =
-    document.getElementById(
-        "homeScreen"
-    );
+    document.getElementById(screen).style.display = "block";
+}
 
 
-const musicScreen =
-    document.getElementById(
-        "musicScreen"
-    );
-
-
-const searchScreen =
-    document.getElementById(
-        "searchScreen"
-    );
-
-
-const errorScreen =
-    document.getElementById(
-        "errorScreen"
-    );
-
-
-const scanButton =
-    document.getElementById(
-        "scanButton"
-    );
-
-
-const stopButton =
-    document.getElementById(
-        "stopButton"
-    );
-
-
-const reader =
-    document.getElementById(
-        "reader"
-    );
-
-
-const playButton =
-    document.getElementById(
-        "playButton"
-    );
-
-
-const youtubePlayer =
-    document.getElementById(
-        "youtubePlayer"
-    );
-
-
-const nextButton =
-    document.getElementById(
-        "nextButton"
-    );
-
-
-const searchQuery =
-    document.getElementById(
-        "searchQuery"
-    );
-
-
-const searchButton =
-    document.getElementById(
-        "searchButton"
-    );
-
-
-const searchNextButton =
-    document.getElementById(
-        "searchNextButton"
-    );
-
-
-const errorContent =
-    document.getElementById(
-        "errorContent"
-    );
-
-
-const errorBackButton =
-    document.getElementById(
-        "errorBackButton"
-    );
-
-
-
-/* ==========================================
+/* =====================================================
    SCANNER
-   ========================================== */
+===================================================== */
 
+async function startScanner() {
 
-scanButton.addEventListener(
-    "click",
-    lancerScanner
-);
+    document.getElementById("reader").style.display = "block";
 
-
-async function lancerScanner() {
-
-
-    scanButton.style.display =
-        "none";
-
-
-    stopButton.style.display =
-        "inline-block";
-
-
-    reader.style.display =
-        "block";
-
-
-    qrScanner =
-        new Html5Qrcode(
-            "reader"
-        );
-
+    scanner = new Html5Qrcode("reader");
 
     try {
 
-
-        await qrScanner.start(
+        await scanner.start(
 
             {
-                facingMode:
-                    "environment"
+                facingMode: "environment"
             },
 
             {
-
                 fps: 10,
 
                 qrbox: {
-
                     width: 250,
-
                     height: 250
-
                 }
 
             },
 
+            async function(decodedText) {
 
-            async (decodedText) => {
+                await stopScanner();
 
-
-                console.log(
-                    "QR détecté :",
-                    decodedText
-                );
-
-
-                await arreterScanner();
-
-
-                traiterQR(
-                    decodedText
-                );
+                processQRCode(decodedText);
 
             },
 
+            function(errorMessage) {
 
-            (errorMessage) => {
-
-                /*
-                    Aucun QR détecté.
-                */
+                // Ignore les erreurs normales de recherche du QR
 
             }
 
         );
 
-
     }
 
-    catch (error) {
+    catch(error) {
 
+        document.getElementById("errorText").textContent =
+            "Impossible d'utiliser la caméra.";
 
-        console.error(error);
-
-
-        alert(
-            "Impossible d'utiliser la caméra."
-        );
-
-
-        await arreterScanner();
+        showScreen("errorScreen");
 
     }
 
 }
 
 
+/* =====================================================
+   STOP SCANNER
+===================================================== */
 
-/* ==========================================
-   TRAITER LE QR
-   ========================================== */
+async function stopScanner() {
 
+    if(scanner) {
 
-function traiterQR(decodedText) {
+        try {
 
-
-    /*
-        ======================================
-        CAS 1
-        NOS QR GEEKSTER
-        ======================================
-    */
-
-
-    const geeksterMatch =
-        decodedText.match(
-            /GEEKSTER-(\d+)/i
-        );
-
-
-    if (geeksterMatch) {
-
-
-        const numero =
-            geeksterMatch[1];
-
-
-        const videoID =
-            cartes[numero];
-
-
-        if (videoID) {
-
-
-            currentVideoID =
-                videoID;
-
-
-            afficherMusique();
-
-
-            return;
+            await scanner.stop();
 
         }
 
+        catch(error) {}
+
+        scanner = null;
+
     }
 
+    document.getElementById("reader").style.display = "none";
+
+}
 
 
-    /*
-        ======================================
-        CAS 2
-        LIEN DIRECT VERS UNE VIDÉO YOUTUBE
-        ======================================
-    */
+/* =====================================================
+   LECTURE DU QR
+===================================================== */
 
+function processQRCode(text) {
 
-    const youtubeID =
-        extraireYouTubeID(
-            decodedText
-        );
+    const match = text.match(/GEEKSTER-(\d+)/i);
 
+    if(!match) {
 
-    if (youtubeID) {
+        document.getElementById("errorText").textContent =
+            "Ce QR code n'est pas une carte Geekster.";
 
-
-        currentVideoID =
-            youtubeID;
-
-
-        afficherMusique();
-
+        showScreen("errorScreen");
 
         return;
 
     }
 
 
-
-    /*
-        ======================================
-        CAS 3
-        RECHERCHE YOUTUBE
-        ======================================
-    */
+    const cardNumber = match[1].padStart(3,"0");
 
 
-    const recherche =
-        extraireRechercheYouTube(
-            decodedText
-        );
+    if(!cards[cardNumber]) {
 
+        document.getElementById("errorText").textContent =
+            "Carte Geekster inconnue : " + cardNumber;
 
-    if (recherche) {
-
-
-        currentSearchURL =
-            decodedText;
-
-
-        afficherRecherche(
-            recherche
-        );
-
+        showScreen("errorScreen");
 
         return;
 
     }
 
 
+    currentCard = cards[cardNumber];
 
-    /*
-        ======================================
-        CAS INCONNU
-        ======================================
-    */
+    currentCard.number = cardNumber;
 
 
-    afficherErreur(
-        decodedText
-    );
+    /* Création automatique de la recherche YouTube */
 
-}
+    const query =
+        currentCard.music +
+        " " +
+        currentCard.game +
+        " soundtrack";
 
-
-
-/* ==========================================
-   EXTRAIRE UNE VIDÉO YOUTUBE
-   ========================================== */
-
-
-function extraireYouTubeID(url) {
+    youtubeSearchURL =
+        "https://www.youtube.com/results?search_query=" +
+        encodeURIComponent(query);
 
 
-    try {
-
-
-        const adresse =
-            new URL(url);
-
-
-        /*
-            youtube.com/watch?v=
-        */
-
-
-        if (
-            adresse.hostname.includes(
-                "youtube.com"
-            ) &&
-            adresse.pathname ===
-                "/watch"
-        ) {
-
-
-            return adresse.searchParams.get(
-                "v"
-            );
-
-        }
-
-
-        /*
-            youtu.be/XXXX
-        */
-
-
-        if (
-            adresse.hostname ===
-                "youtu.be"
-        ) {
-
-
-            return adresse.pathname
-                .substring(1)
-                .split("/")[0];
-
-        }
-
-
-        /*
-            youtube.com/embed/XXXX
-        */
-
-
-        if (
-            adresse.hostname.includes(
-                "youtube.com"
-            ) &&
-            adresse.pathname.startsWith(
-                "/embed/"
-            )
-        ) {
-
-
-            return adresse.pathname
-                .split("/embed/")[1]
-                .split("/")[0];
-
-        }
-
-
-    }
-
-    catch (error) {
-
-
-        console.log(
-            "Erreur URL YouTube :",
-            error
-        );
-
-    }
-
-
-    return null;
+    showScreen("gameScreen");
 
 }
 
 
+/* =====================================================
+   LANCER LA MUSIQUE
+===================================================== */
 
-/* ==========================================
-   EXTRAIRE UNE RECHERCHE YOUTUBE
-   ========================================== */
+function launchMusic() {
 
-
-function extraireRechercheYouTube(url) {
-
-
-    try {
+    if(!currentCard) return;
 
 
-        const adresse =
-            new URL(url);
+    document.getElementById("searchText").textContent =
+        currentCard.music +
+        " • " +
+        currentCard.game;
 
 
-        /*
-            Nous recherchons :
-
-            /results
-
-            avec :
-
-            search_query=
-        */
-
-
-        if (
-            adresse.hostname.includes(
-                "youtube.com"
-            ) &&
-            adresse.pathname ===
-                "/results"
-        ) {
-
-
-            const recherche =
-                adresse.searchParams.get(
-                    "search_query"
-                );
-
-
-            if (recherche) {
-
-                return recherche;
-
-            }
-
-        }
-
-    }
-
-    catch (error) {
-
-
-        console.log(
-            "Erreur recherche YouTube :",
-            error
-        );
-
-    }
-
-
-    return null;
+    showScreen("searchScreen");
 
 }
 
 
+/* =====================================================
+   OUVRIR YOUTUBE
+===================================================== */
 
-/* ==========================================
-   AFFICHER MUSIQUE
-   ========================================== */
+function openYouTube() {
 
-
-function afficherMusique() {
-
-
-    homeScreen.style.display =
-        "none";
-
-
-    searchScreen.style.display =
-        "none";
-
-
-    errorScreen.style.display =
-        "none";
-
-
-    musicScreen.style.display =
-        "block";
-
-
-    youtubePlayer.style.display =
-        "none";
-
-
-    youtubePlayer.innerHTML =
-        "";
-
-
-    playButton.style.display =
-        "inline-block";
-
-
-    nextButton.style.display =
-        "none";
-
-}
-
-
-
-/* ==========================================
-   LANCER MUSIQUE
-   ========================================== */
-
-
-playButton.addEventListener(
-    "click",
-    () => {
-
-
-        if (!currentVideoID) {
-
-            return;
-
-        }
-
-
-        playButton.style.display =
-            "none";
-
-
-        youtubePlayer.style.display =
-            "block";
-
-
-        youtubePlayer.innerHTML = `
-
-            <iframe
-
-                src="https://www.youtube.com/embed/${currentVideoID}?autoplay=1&rel=0&modestbranding=1"
-
-                title="Geekster"
-
-                allow="
-                    autoplay;
-                    encrypted-media;
-                    picture-in-picture
-                "
-
-                allowfullscreen>
-
-            </iframe>
-
-        `;
-
-
-        nextButton.style.display =
-            "inline-block";
-
-    }
-);
-
-
-
-/* ==========================================
-   AFFICHER RECHERCHE
-   ========================================== */
-
-
-function afficherRecherche(
-    recherche
-) {
-
-
-    homeScreen.style.display =
-        "none";
-
-
-    musicScreen.style.display =
-        "none";
-
-
-    errorScreen.style.display =
-        "none";
-
-
-    searchScreen.style.display =
-        "block";
-
-
-    /*
-        Affichage du texte recherché.
-    */
-
-
-    searchQuery.textContent =
-        recherche;
-
-}
-
-
-
-/* ==========================================
-   OUVRIR RECHERCHE YOUTUBE
-   ========================================== */
-
-
-searchButton.addEventListener(
-    "click",
-    () => {
-
-
-        if (!currentSearchURL) {
-
-            return;
-
-        }
-
-
-        /*
-            Ouvre la recherche YouTube
-            dans un nouvel onglet.
-        */
-
+    if(youtubeSearchURL) {
 
         window.open(
-            currentSearchURL,
+            youtubeSearchURL,
             "_blank"
         );
 
     }
-);
-
-
-
-/* ==========================================
-   AFFICHER ERREUR
-   ========================================== */
-
-
-function afficherErreur(
-    contenu
-) {
-
-
-    homeScreen.style.display =
-        "none";
-
-
-    musicScreen.style.display =
-        "none";
-
-
-    searchScreen.style.display =
-        "none";
-
-
-    errorScreen.style.display =
-        "block";
-
-
-    errorContent.textContent =
-        contenu;
 
 }
 
 
+/* =====================================================
+   RÉVÉLER LA CARTE
+===================================================== */
 
-/* ==========================================
+function revealCard() {
+
+    if(!currentCard) return;
+
+
+    document.getElementById("musicTitle").textContent =
+        currentCard.music;
+
+
+    document.getElementById("gameTitle").textContent =
+        currentCard.game;
+
+
+    document.getElementById("cardYear").textContent =
+        currentCard.year;
+
+
+    showScreen("revealScreen");
+
+}
+
+
+/* =====================================================
    CARTE SUIVANTE
-   ========================================== */
+===================================================== */
 
+function nextCard() {
 
-nextButton.addEventListener(
-    "click",
-    nouvelleCarte
-);
+    currentCard = null;
 
+    youtubeSearchURL = "";
 
-searchNextButton.addEventListener(
-    "click",
-    nouvelleCarte
-);
-
-
-function nouvelleCarte() {
-
-
-    currentVideoID =
-        null;
-
-
-    currentSearchURL =
-        null;
-
-
-    youtubePlayer.innerHTML =
-        "";
-
-
-    youtubePlayer.style.display =
-        "none";
-
-
-    musicScreen.style.display =
-        "none";
-
-
-    searchScreen.style.display =
-        "none";
-
-
-    errorScreen.style.display =
-        "none";
-
-
-    homeScreen.style.display =
-        "block";
-
-
-    scanButton.style.display =
-        "inline-block";
-
-
-    playButton.style.display =
-        "inline-block";
-
-
-    nextButton.style.display =
-        "none";
+    showScreen("homeScreen");
 
 }
-
-
-
-/* ==========================================
-   RETOUR APRÈS ERREUR
-   ========================================== */
-
-
-errorBackButton.addEventListener(
-    "click",
-    nouvelleCarte
-);
-
-
-
-/* ==========================================
-   ARRÊTER LE SCANNER
-   ========================================== */
-
-
-async function arreterScanner() {
-
-
-    if (qrScanner) {
-
-
-        try {
-
-            await qrScanner.stop();
-
-        }
-
-        catch (error) {
-
-            console.log(error);
-
-        }
-
-
-        qrScanner = null;
-
-    }
-
-
-    reader.style.display =
-        "none";
-
-
-    stopButton.style.display =
-        "none";
-
-}
-
-
-
-/* ==========================================
-   BOUTON FERMER SCANNER
-   ========================================== */
-
-
-stopButton.addEventListener(
-    "click",
-    async () => {
-
-
-        await arreterScanner();
-
-
-        scanButton.style.display =
-            "inline-block";
-
-    }
-);
 
 
 </script>
 
-
 </body>
-
 </html>
