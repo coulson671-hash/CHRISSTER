@@ -22,171 +22,114 @@ type="text/javascript">
 }
 
 body {
-
     margin: 0;
-
-    background:
-        radial-gradient(circle at top, #292929 0%, #111 55%);
-
+    background: #111;
     color: white;
-
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-
+    font-family: Arial, Helvetica, sans-serif;
     min-height: 100vh;
-
 }
 
 .container {
-
     width: 100%;
-
     max-width: 520px;
-
     margin: auto;
-
-    padding: 18px;
-
+    padding: 16px;
 }
 
 header {
-
     text-align: center;
-
-    margin-bottom: 15px;
-
+    margin-bottom: 14px;
 }
 
 .logo {
-
     font-size: 42px;
-
     font-weight: 900;
-
     letter-spacing: 5px;
-
 }
 
 .subtitle {
-
     color: #aaa;
-
     font-size: 14px;
-
 }
 
 .screen {
-
     display: none;
-
 }
 
 .screen.active {
-
     display: block;
-
 }
 
-
-/* =========================
-   BOUTONS
-========================= */
+.panel {
+    background: #202020;
+    border-radius: 18px;
+    padding: 20px;
+    margin-top: 14px;
+    text-align: center;
+}
 
 button {
-
     width: 100%;
-
     border: 0;
-
     border-radius: 14px;
-
     padding: 17px;
-
     margin-top: 12px;
-
     font-size: 18px;
-
     font-weight: bold;
-
     cursor: pointer;
-
     color: white;
-
     background: #e50914;
-
 }
 
 button.secondary {
-
-    background: #292929;
-
+    background: #303030;
 }
 
 button:active {
-
     transform: scale(.98);
-
-}
-
-
-/* =========================
-   CARTES UI
-========================= */
-
-.panel {
-
-    background: #202020;
-
-    border-radius: 18px;
-
-    padding: 22px;
-
-    margin-top: 15px;
-
-    text-align: center;
-
 }
 
 .big-icon {
-
-    font-size: 55px;
-
+    font-size: 52px;
 }
 
 .ready {
-
     font-size: 25px;
-
     font-weight: bold;
-
     margin-top: 8px;
-
 }
 
 .small {
-
     color: #aaa;
-
     font-size: 14px;
-
+    line-height: 1.5;
 }
 
 
-/* =========================
+/* =========================================
    SCANNER
-========================= */
+========================================= */
+
+#scannerPanel {
+
+    display: none;
+
+    padding: 0;
+
+    margin-top: 12px;
+
+    background: #000;
+
+    border-radius: 18px;
+
+    overflow: hidden;
+}
 
 #reader {
 
     width: 100%;
 
-    margin: 10px auto 0;
-
-    overflow: hidden;
-
-    border-radius: 18px;
+    min-height: 310px;
 
 }
 
@@ -194,14 +137,34 @@ button:active {
 
     width: 100% !important;
 
+    height: auto !important;
+
+    display: block;
+
     border-radius: 18px;
 
 }
 
+#reader__dashboard_section_swaplink {
 
-/* =========================
-   LECTEUR
-========================= */
+    color: white !important;
+
+}
+
+#reader__dashboard_section_csr button {
+
+    width: auto !important;
+
+    font-size: 14px !important;
+
+    padding: 10px 14px !important;
+
+}
+
+
+/* =========================================
+   LECTEUR YOUTUBE
+========================================= */
 
 .player {
 
@@ -209,9 +172,9 @@ button:active {
 
     aspect-ratio: 16 / 9;
 
-    margin-top: 20px;
+    margin-top: 18px;
 
-    border-radius: 15px;
+    border-radius: 14px;
 
     overflow: hidden;
 
@@ -230,9 +193,9 @@ button:active {
 }
 
 
-/* =========================
+/* =========================================
    REVELATION
-========================= */
+========================================= */
 
 .music-title {
 
@@ -246,7 +209,7 @@ button:active {
 
     color: #ccc;
 
-    margin-top: 12px;
+    margin-top: 10px;
 
     font-size: 18px;
 
@@ -254,20 +217,15 @@ button:active {
 
 .year {
 
-    font-size: 80px;
+    font-size: 78px;
 
     font-weight: 900;
 
     color: #f5be32;
 
-    margin-top: 15px;
+    margin-top: 14px;
 
 }
-
-
-/* =========================
-   QR INFO
-========================= */
 
 .card-number {
 
@@ -275,7 +233,7 @@ button:active {
 
     font-size: 12px;
 
-    margin-top: 12px;
+    margin-top: 10px;
 
 }
 
@@ -292,239 +250,323 @@ button:active {
 
 <header>
 
-<div class="logo">
-GEEKSTER
-</div>
+    <div class="logo">
+        GEEKSTER
+    </div>
 
-<div class="subtitle">
-🎮 GAMING EDITION
-</div>
+    <div class="subtitle">
+        🎮 GAMING EDITION
+    </div>
 
 </header>
 
 
-<!-- ==================================================
+
+<!-- =====================================================
      ACCUEIL
-================================================== -->
+===================================================== -->
 
 <section
 id="home"
 class="screen active">
 
-<div class="panel">
 
-<div class="big-icon">
-📷
-</div>
-
-<h2>
-Prêt à jouer ?
-</h2>
-
-<p class="small">
-Scanne le QR code de ta carte.
-</p>
-
-<button onclick="startScanner()">
-
-📷 SCANNER UNE CARTE
-
-</button>
-
-</div>
+    <div
+    id="startPanel"
+    class="panel">
 
 
-<div id="reader"></div>
+        <div class="big-icon">
+            📷
+        </div>
+
+
+        <h2>
+            Prêt à jouer ?
+        </h2>
+
+
+        <p class="small">
+            Scanne le QR code de ta carte.
+        </p>
+
+
+        <button
+        onclick="startScanner()">
+
+            📷 SCANNER UNE CARTE
+
+        </button>
+
+
+    </div>
+
+
+
+    <!--
+
+    IMPORTANT :
+
+    Ce panneau est caché au départ.
+
+    Quand le joueur appuie sur
+    "Scanner une carte",
+
+    le bouton disparaît et
+    seul le scanner reste visible.
+
+    -->
+
+    <div
+    id="scannerPanel">
+
+
+        <div id="reader"></div>
+
+
+        <button
+        class="secondary"
+        onclick="cancelScanner()">
+
+            ✖️ ANNULER LE SCAN
+
+        </button>
+
+
+    </div>
+
 
 </section>
 
 
 
-<!-- ==================================================
-     MUSIQUE PRETE
-================================================== -->
+<!-- =====================================================
+     MUSIQUE PRÊTE
+===================================================== -->
 
 <section
 id="readyScreen"
 class="screen">
 
-<div class="panel">
 
-<div class="big-icon">
-🎵
-</div>
-
-<div class="ready">
-MUSIQUE PRÊTE
-</div>
-
-<p class="small">
-La carte a été reconnue.
-</p>
-
-</div>
+    <div class="panel">
 
 
-<button onclick="playMusic()">
-
-▶️ LANCER LA MUSIQUE
-
-</button>
+        <div class="big-icon">
+            🎵
+        </div>
 
 
-<button
-class="secondary"
-onclick="revealCard()">
-
-👀 RÉVÉLER LA CARTE
-
-</button>
+        <div class="ready">
+            MUSIQUE PRÊTE
+        </div>
 
 
-<button
-class="secondary"
-onclick="nextCard()">
+        <p class="small">
 
-📷 CARTE SUIVANTE
+            Carte
+            <span id="readyNumber"></span>
+            reconnue.
 
-</button>
+        </p>
+
+
+    </div>
+
+
+
+    <button
+    onclick="playMusic()">
+
+        ▶️ LANCER LA MUSIQUE
+
+    </button>
+
+
+
+    <button
+    class="secondary"
+    onclick="revealCard()">
+
+        👀 RÉVÉLER LA CARTE
+
+    </button>
+
+
+
+    <button
+    class="secondary"
+    onclick="nextCard()">
+
+        📷 CARTE SUIVANTE
+
+    </button>
+
 
 </section>
 
 
 
-<!-- ==================================================
+<!-- =====================================================
      LECTEUR
-================================================== -->
+===================================================== -->
 
 <section
 id="playerScreen"
 class="screen">
 
-<div class="panel">
 
-<div class="big-icon">
-🎵
-</div>
-
-<div class="ready">
-MUSIQUE EN COURS
-</div>
-
-<div class="player"
-id="youtubePlayer">
-</div>
-
-</div>
+    <div class="panel">
 
 
-<button
-class="secondary"
-onclick="revealCard()">
-
-👀 RÉVÉLER LA CARTE
-
-</button>
+        <div class="big-icon">
+            🎵
+        </div>
 
 
-<button
-class="secondary"
-onclick="nextCard()">
+        <div class="ready">
+            MUSIQUE EN COURS
+        </div>
 
-📷 CARTE SUIVANTE
 
-</button>
+        <div
+        id="youtubePlayer"
+        class="player">
+
+        </div>
+
+
+    </div>
+
+
+
+    <button
+    class="secondary"
+    onclick="revealCard()">
+
+        👀 RÉVÉLER LA CARTE
+
+    </button>
+
+
+
+    <button
+    class="secondary"
+    onclick="nextCard()">
+
+        📷 CARTE SUIVANTE
+
+    </button>
+
 
 </section>
 
 
 
-<!-- ==================================================
+<!-- =====================================================
      REVELATION
-================================================== -->
+===================================================== -->
 
 <section
 id="revealScreen"
 class="screen">
 
-<div class="panel">
 
-<h2>
-🎉 CARTE
-</h2>
+    <div class="panel">
 
 
-<div
-id="musicTitle"
-class="music-title">
-</div>
+        <h2>
+            🎉 CARTE
+        </h2>
 
 
-<div
-id="gameTitle"
-class="game-title">
-</div>
+        <div
+        id="musicTitle"
+        class="music-title">
+
+        </div>
 
 
-<div
-id="cardYear"
-class="year">
-</div>
+        <div
+        id="gameTitle"
+        class="game-title">
+
+        </div>
 
 
-<div
-id="cardNumber"
-class="card-number">
-</div>
+        <div
+        id="cardYear"
+        class="year">
 
-</div>
+        </div>
 
 
-<button
-onclick="nextCard()">
+        <div
+        id="cardNumber"
+        class="card-number">
 
-📷 CARTE SUIVANTE
+        </div>
 
-</button>
+
+    </div>
+
+
+
+    <button
+    onclick="nextCard()">
+
+        📷 CARTE SUIVANTE
+
+    </button>
+
 
 </section>
 
 
 
-<!-- ==================================================
+<!-- =====================================================
      ERREUR
-================================================== -->
+===================================================== -->
 
 <section
 id="errorScreen"
 class="screen">
 
-<div class="panel">
 
-<div class="big-icon">
-❌
-</div>
-
-<h2>
-CARTE NON RECONNUE
-</h2>
-
-<p
-id="errorMessage"
-class="small">
-</p>
-
-</div>
+    <div class="panel">
 
 
-<button
-onclick="nextCard()">
+        <div class="big-icon">
+            ❌
+        </div>
 
-RETOUR
 
-</button>
+        <h2>
+            CARTE NON RECONNUE
+        </h2>
+
+
+        <p
+        id="errorMessage"
+        class="small">
+
+        </p>
+
+
+    </div>
+
+
+
+    <button
+    onclick="nextCard()">
+
+        RETOUR
+
+    </button>
+
 
 </section>
+
 
 
 </div>
@@ -536,287 +578,302 @@ RETOUR
 
 /* =====================================================
    CARTES
+=====================================================
+
+   Pour le test :
+
+   001 possède déjà ton vrai ID YouTube.
+
+   Les autres cartes sont reconnues,
+   mais leurs vidéos ne sont pas encore renseignées.
+
 ===================================================== */
+
 
 const cards = {
 
 
-"001": {
+    "001": {
 
-    music: "Korobeiniki",
+        music: "Korobeiniki",
 
-    game: "Tetris",
+        game: "Tetris",
 
-    year: 1984,
+        year: 1984,
 
-    youtube: "UtgHZaq0EGs"
+        youtube: "UtgHZaq0EGs"
 
-},
+    },
 
 
-"002": {
+    "002": {
 
-    music: "Ground Theme",
+        music: "Ground Theme",
 
-    game: "Super Mario Bros.",
+        game: "Super Mario Bros.",
 
-    year: 1985,
+        year: 1985,
 
-    youtube: ""
+        youtube: ""
 
-},
+    },
 
 
-"003": {
+    "003": {
 
-    music: "Main Theme",
+        music: "Main Theme",
 
-    game: "The Legend of Zelda",
+        game: "The Legend of Zelda",
 
-    year: 1986,
+        year: 1986,
 
-    youtube: ""
+        youtube: ""
 
-},
+    },
 
 
-"004": {
+    "004": {
 
-    music: "Brinstar",
+        music: "Brinstar",
 
-    game: "Metroid",
+        game: "Metroid",
 
-    year: 1986,
+        year: 1986,
 
-    youtube: ""
+        youtube: ""
 
-},
+    },
 
 
-"005": {
+    "005": {
 
-    music: "Main Theme",
+        music: "Main Theme",
 
-    game: "Final Fantasy",
+        game: "Final Fantasy",
 
-    year: 1987,
+        year: 1987,
 
-    youtube: ""
+        youtube: ""
 
-},
+    },
 
 
-"006": {
+    "006": {
 
-    music: "Dr. Wily Stage 1",
+        music: "Dr. Wily Stage 1",
 
-    game: "Mega Man 2",
+        game: "Mega Man 2",
 
-    year: 1988,
+        year: 1988,
 
-    youtube: ""
+        youtube: ""
 
-},
+    },
 
 
-"007": {
+    "007": {
 
-    music: "Main Theme",
+        music: "Main Theme",
 
-    game: "Prince of Persia",
+        game: "Prince of Persia",
 
-    year: 1989,
+        year: 1989,
 
-    youtube: ""
+        youtube: ""
 
-},
+    },
 
 
-"008": {
+    "008": {
 
-    music: "Main Theme",
+        music: "Main Theme",
 
-    game: "SimCity",
+        game: "SimCity",
 
-    year: 1989,
+        year: 1989,
 
-    youtube: ""
+        youtube: ""
 
-},
+    },
 
 
-"009": {
+    "009": {
 
-    music: "Overworld Theme",
+        music: "Overworld Theme",
 
-    game: "Super Mario World",
+        game: "Super Mario World",
 
-    year: 1990,
+        year: 1990,
 
-    youtube: ""
+        youtube: ""
 
-},
+    },
 
 
-"010": {
+    "010": {
 
-    music: "Opening Theme",
+        music: "Opening Theme",
 
-    game: "The Secret of Monkey Island",
+        game: "The Secret of Monkey Island",
 
-    year: 1990,
+        year: 1990,
 
-    youtube: ""
+        youtube: ""
 
-},
+    },
 
 
-"011": {
+    "011": {
 
-    music: "Green Hill Zone",
+        music: "Green Hill Zone",
 
-    game: "Sonic the Hedgehog",
+        game: "Sonic the Hedgehog",
 
-    year: 1991,
+        year: 1991,
 
-    youtube: ""
+        youtube: ""
 
-},
+    },
 
 
-"012": {
+    "012": {
 
-    music: "Guile Theme",
+        music: "Guile Theme",
 
-    game: "Street Fighter II",
+        game: "Street Fighter II",
 
-    year: 1991,
+        year: 1991,
 
-    youtube: ""
+        youtube: ""
 
-},
+    },
 
 
-"013": {
+    "013": {
 
-    music: "Main Theme",
+        music: "Main Theme",
 
-    game: "Final Fantasy IV",
+        game: "Final Fantasy IV",
 
-    year: 1991,
+        year: 1991,
 
-    youtube: ""
+        youtube: ""
 
-},
+    },
 
 
-"014": {
+    "014": {
 
-    music: "Stage 1",
+        music: "Stage 1",
 
-    game: "Super Castlevania IV",
+        game: "Super Castlevania IV",
 
-    year: 1991,
+        year: 1991,
 
-    youtube: ""
+        youtube: ""
 
-},
+    },
 
 
-"015": {
+    "015": {
 
-    music: "Dark World",
+        music: "Dark World",
 
-    game: "The Legend of Zelda: A Link to the Past",
+        game: "The Legend of Zelda: A Link to the Past",
 
-    year: 1991,
+        year: 1991,
 
-    youtube: ""
+        youtube: ""
 
-},
+    },
 
 
-"016": {
+    "016": {
 
-    music: "Main Theme",
+        music: "Main Theme",
 
-    game: "Mortal Kombat",
+        game: "Mortal Kombat",
 
-    year: 1992,
+        year: 1992,
 
-    youtube: ""
+        youtube: ""
 
-},
+    },
 
 
-"017": {
+    "017": {
 
-    music: "Rainbow Road",
+        music: "Rainbow Road",
 
-    game: "Super Mario Kart",
+        game: "Super Mario Kart",
 
-    year: 1992,
+        year: 1992,
 
-    youtube: ""
+        youtube: ""
 
-},
+    },
 
 
-"018": {
+    "018": {
 
-    music: "At Doom's Gate",
+        music: "At Doom's Gate",
 
-    game: "Doom",
+        game: "Doom",
 
-    year: 1993,
+        year: 1993,
 
-    youtube: ""
+        youtube: ""
 
-},
+    },
 
 
-"019": {
+    "019": {
 
-    music: "Main Theme",
+        music: "Main Theme",
 
-    game: "Myst",
+        game: "Myst",
 
-    year: 1993,
+        year: 1993,
 
-    youtube: ""
+        youtube: ""
 
-},
+    },
 
 
-"020": {
+    "020": {
 
-    music: "Main Theme",
+        music: "Main Theme",
 
-    game: "Star Fox",
+        game: "Star Fox",
 
-    year: 1993,
+        year: 1993,
 
-    youtube: ""
+        youtube: ""
 
-}
+    }
 
 };
+
 
 
 /* =====================================================
    VARIABLES
 ===================================================== */
 
+
 let scanner = null;
 
 let currentCard = null;
 
 
+
 /* =====================================================
-   AFFICHER UN ECRAN
+   AFFICHAGE DES ECRANS
 ===================================================== */
 
+
 function showScreen(id) {
+
 
     document
         .querySelectorAll(".screen")
@@ -831,87 +888,147 @@ function showScreen(id) {
         .getElementById(id)
         .classList.add("active");
 
+
 }
 
 
+
 /* =====================================================
-   DEMARRER SCANNER
+   DEMARRER LE SCANNER
 ===================================================== */
+
 
 async function startScanner() {
 
-    const reader = document.getElementById("reader");
+
+    /*
+       On cache immédiatement le panneau
+       contenant le bouton.
+
+       Le joueur ne voit donc plus
+       "Scanner une carte" pendant
+       que la caméra fonctionne.
+    */
+
+
+    document
+        .getElementById("startPanel")
+        .style.display = "none";
+
+
+    document
+        .getElementById("scannerPanel")
+        .style.display = "block";
+
+
+    const reader =
+        document.getElementById("reader");
+
 
     reader.innerHTML = "";
 
-    try {
 
-        scanner =
-            new Html5Qrcode("reader");
+    scanner =
+        new Html5Qrcode("reader");
+
+
+    try {
 
 
         await scanner.start(
 
+
             {
-                facingMode: {
-                    exact: "environment"
-                }
+                facingMode: "environment"
             },
 
-            {
 
+            {
                 fps: 10,
 
                 qrbox: {
-                    width: 230,
-                    height: 230
+                    width: 240,
+                    height: 240
                 }
 
             },
 
-            async (decodedText) => {
+
+            async function(decodedText) {
+
+
+                /*
+                   QR trouvé.
+
+                   On arrête immédiatement
+                   la caméra avant de changer
+                   d'écran.
+                */
+
 
                 await stopScanner();
 
+
                 processQR(decodedText);
+
 
             },
 
-            () => {
 
-                // Rien.
-                // Les erreurs de détection normales
-                // sont ignorées.
+            function(errorMessage) {
+
+                /*
+                   Les erreurs normales
+                   de recherche du QR sont ignorées.
+                */
 
             }
 
+
         );
+
 
     }
 
     catch(error) {
 
+
         console.error(error);
+
+
+        await stopScanner();
+
 
         document
             .getElementById("errorMessage")
             .textContent =
-            "Impossible d'accéder à la caméra.";
+
+            "La caméra n'a pas pu être démarrée. " +
+
+            "Vérifie l'autorisation caméra " +
+
+            "du navigateur.";
+
 
         showScreen("errorScreen");
+
 
     }
 
 }
 
 
+
 /* =====================================================
-   ARRETER SCANNER
+   ARRÊTER LE SCANNER
 ===================================================== */
+
 
 async function stopScanner() {
 
+
     if(scanner) {
+
 
         try {
 
@@ -919,94 +1036,210 @@ async function stopScanner() {
 
         }
 
-        catch(error) {}
+        catch(error) {
+
+        }
+
+
+        try {
+
+            scanner.clear();
+
+        }
+
+        catch(error) {
+
+        }
+
 
         scanner = null;
 
     }
 
+
+    document
+        .getElementById("scannerPanel")
+        .style.display = "none";
+
+
+    document
+        .getElementById("reader")
+        .innerHTML = "";
+
 }
 
 
+
 /* =====================================================
-   ANALYSER QR
+   ANNULER LE SCAN
 ===================================================== */
+
+
+async function cancelScanner() {
+
+
+    await stopScanner();
+
+
+    document
+        .getElementById("startPanel")
+        .style.display = "block";
+
+
+}
+
+
+
+/* =====================================================
+   RECONNAISSANCE DU QR
+===================================================== */
+
 
 function processQR(text) {
 
 
+    /*
+       Le QR normal est :
+
+       GEEKSTER-001
+
+       Mais cette expression accepte aussi :
+
+       GEEKSTER_001
+
+       ou une URL contenant :
+
+       GEEKSTER-001
+    */
+
+
     const match =
-        text.match(
-            /GEEKSTER-(\d+)/i
+
+        String(text).match(
+            /GEEKSTER[-_]?(\d{1,3})/i
         );
 
 
     if(!match) {
 
+
         document
             .getElementById("errorMessage")
             .textContent =
-            "Ce QR code n'est pas une carte Geekster.";
+
+            "QR détecté, mais ce n'est pas " +
+
+            "un QR Geekster : " +
+
+            text;
+
 
         showScreen("errorScreen");
+
 
         return;
 
     }
 
 
+
     const number =
-        match[1].padStart(3,"0");
+
+        match[1].padStart(3, "0");
+
 
 
     if(!cards[number]) {
 
+
         document
             .getElementById("errorMessage")
             .textContent =
-            "Carte inconnue : " + number;
+
+            "Carte Geekster inconnue : " +
+
+            number;
+
 
         showScreen("errorScreen");
+
 
         return;
 
     }
 
 
-    currentCard =
-        cards[number];
+
+    /*
+       On copie la carte.
+
+       Cela évite de modifier
+       la base originale.
+    */
 
 
-    currentCard.number =
-        number;
+    currentCard = {
+
+        ...cards[number],
+
+        number: number
+
+    };
+
+
+
+    document
+        .getElementById("readyNumber")
+        .textContent = number;
+
 
 
     showScreen("readyScreen");
 
+
 }
 
 
+
 /* =====================================================
-   LANCER MUSIQUE
+   LANCER LA MUSIQUE
 ===================================================== */
+
 
 function playMusic() {
 
 
-    if(!currentCard)
+    if(!currentCard) {
+
         return;
+
+    }
 
 
     const player =
-        document.getElementById(
-            "youtubePlayer"
-        );
+
+        document
+            .getElementById("youtubePlayer");
+
+
+    /*
+       On nettoie complètement
+       l'ancien lecteur.
+    */
 
 
     player.innerHTML = "";
 
 
+
+    /*
+       Si aucune vidéo n'est encore
+       renseignée pour cette carte.
+    */
+
+
     if(!currentCard.youtube) {
+
 
         player.innerHTML = `
 
@@ -1018,106 +1251,165 @@ function playMusic() {
                 padding:20px;
                 color:#aaa;
                 text-align:center;
+                line-height:1.5;
             ">
 
-            🎵<br><br>
+                🎵<br><br>
 
-            Cette carte n'a pas encore
-            de vidéo configurée.
+                Carte reconnue !
+
+                <br><br>
+
+                La vidéo YouTube de cette
+                carte sera ajoutée ensuite.
 
             </div>
 
         `;
 
+
         showScreen("playerScreen");
+
 
         return;
 
     }
 
 
+
+    /*
+       Création du vrai lecteur YouTube.
+
+       Pour la carte 001 :
+
+       UtgHZaq0EGs
+
+    */
+
+
     const iframe =
+
         document.createElement("iframe");
 
 
+
     iframe.src =
+
         "https://www.youtube.com/embed/" +
-        currentCard.youtube +
-        "?autoplay=1&rel=0";
+
+        encodeURIComponent(
+            currentCard.youtube
+        ) +
+
+        "?autoplay=1" +
+
+        "&rel=0" +
+
+        "&playsinline=1";
+
 
 
     iframe.allow =
-        "autoplay; encrypted-media";
+
+        "autoplay; encrypted-media; " +
+
+        "picture-in-picture";
 
 
-    iframe.allowFullscreen =
-        true;
+
+    iframe.allowFullscreen = true;
+
 
 
     player.appendChild(iframe);
 
 
+
     showScreen("playerScreen");
+
 
 }
 
 
+
 /* =====================================================
-   REVELER
+   REVELER LA CARTE
 ===================================================== */
+
 
 function revealCard() {
 
 
-    if(!currentCard)
+    if(!currentCard) {
+
         return;
+
+    }
 
 
     document
         .getElementById("musicTitle")
         .textContent =
+
         currentCard.music;
 
 
     document
         .getElementById("gameTitle")
         .textContent =
+
         currentCard.game;
 
 
     document
         .getElementById("cardYear")
         .textContent =
+
         currentCard.year;
 
 
     document
         .getElementById("cardNumber")
         .textContent =
+
         "CARTE " +
+
         currentCard.number;
+
 
 
     showScreen("revealScreen");
 
+
 }
+
 
 
 /* =====================================================
    CARTE SUIVANTE
 ===================================================== */
 
+
 async function nextCard() {
 
 
-    if(scanner) {
+    /*
+       Si la caméra tourne encore,
+       on l'arrête.
+    */
 
-        await stopScanner();
 
-    }
+    await stopScanner();
+
 
 
     currentCard = null;
+
+
+
+    /*
+       On détruit le lecteur YouTube.
+    */
 
 
     document
@@ -1125,17 +1417,25 @@ async function nextCard() {
         .innerHTML = "";
 
 
+
+    /*
+       On remet le bouton scanner.
+    */
+
+
     document
-        .getElementById("reader")
-        .innerHTML = "";
+        .getElementById("startPanel")
+        .style.display = "block";
+
 
 
     showScreen("home");
 
+
 }
 
-
 </script>
+
 
 </body>
 
