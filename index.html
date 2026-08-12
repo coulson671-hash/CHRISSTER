@@ -163,32 +163,81 @@ button:active {
 
 
 /* =========================================
-   LECTEUR YOUTUBE
-========================================= */
+   ZONE AUDIO INVISIBLE
+=========================================
 
-.player {
+   L'iframe YouTube existe toujours afin que
+   YouTube fournisse la musique.
 
-    width: 100%;
+   Mais il est placé hors de la zone visible.
 
-    aspect-ratio: 16 / 9;
+   L'utilisateur ne voit donc PAS la vidéo.
+*/
 
-    margin-top: 18px;
+.audio-player {
 
-    border-radius: 14px;
+    position: fixed;
+
+    width: 1px;
+
+    height: 1px;
+
+    left: -100px;
+
+    top: -100px;
+
+    opacity: 0;
+
+    pointer-events: none;
 
     overflow: hidden;
 
-    background: black;
+}
+
+.audio-player iframe {
+
+    width: 1px;
+
+    height: 1px;
+
+    border: 0;
 
 }
 
-.player iframe {
 
-    width: 100%;
+/* =========================================
+   ECRAN MUSIQUE
+========================================= */
 
-    height: 100%;
+.music-status {
 
-    border: 0;
+    padding: 30px 15px;
+
+}
+
+.music-note {
+
+    font-size: 70px;
+
+    margin-bottom: 10px;
+
+}
+
+.music-playing {
+
+    font-size: 25px;
+
+    font-weight: bold;
+
+}
+
+.music-card {
+
+    margin-top: 12px;
+
+    color: #aaa;
+
+    font-size: 14px;
 
 }
 
@@ -303,20 +352,6 @@ class="screen active">
 
 
 
-    <!--
-
-    IMPORTANT :
-
-    Ce panneau est caché au départ.
-
-    Quand le joueur appuie sur
-    "Scanner une carte",
-
-    le bouton disparaît et
-    seul le scanner reste visible.
-
-    -->
-
     <div
     id="scannerPanel">
 
@@ -408,7 +443,7 @@ class="screen">
 
 
 <!-- =====================================================
-     LECTEUR
+     MUSIQUE EN COURS
 ===================================================== -->
 
 <section
@@ -416,22 +451,22 @@ id="playerScreen"
 class="screen">
 
 
-    <div class="panel">
+    <div class="panel music-status">
 
 
-        <div class="big-icon">
+        <div class="music-note">
             🎵
         </div>
 
 
-        <div class="ready">
+        <div class="music-playing">
             MUSIQUE EN COURS
         </div>
 
 
         <div
-        id="youtubePlayer"
-        class="player">
+        id="playingNumber"
+        class="music-card">
 
         </div>
 
@@ -460,6 +495,18 @@ class="screen">
 
 
 </section>
+
+
+
+<!-- =====================================================
+     LECTEUR AUDIO INVISIBLE
+===================================================== -->
+
+<div
+id="youtubePlayer"
+class="audio-player">
+
+</div>
 
 
 
@@ -578,15 +625,6 @@ class="screen">
 
 /* =====================================================
    CARTES
-=====================================================
-
-   Pour le test :
-
-   001 possède déjà ton vrai ID YouTube.
-
-   Les autres cartes sont reconnues,
-   mais leurs vidéos ne sont pas encore renseignées.
-
 ===================================================== */
 
 
@@ -868,7 +906,7 @@ let currentCard = null;
 
 
 /* =====================================================
-   AFFICHAGE DES ECRANS
+   AFFICHAGE
 ===================================================== */
 
 
@@ -894,21 +932,11 @@ function showScreen(id) {
 
 
 /* =====================================================
-   DEMARRER LE SCANNER
+   DEMARRER SCANNER
 ===================================================== */
 
 
 async function startScanner() {
-
-
-    /*
-       On cache immédiatement le panneau
-       contenant le bouton.
-
-       Le joueur ne voit donc plus
-       "Scanner une carte" pendant
-       que la caméra fonctionne.
-    */
 
 
     document
@@ -944,26 +972,21 @@ async function startScanner() {
 
 
             {
+
                 fps: 10,
 
                 qrbox: {
+
                     width: 240,
+
                     height: 240
+
                 }
 
             },
 
 
             async function(decodedText) {
-
-
-                /*
-                   QR trouvé.
-
-                   On arrête immédiatement
-                   la caméra avant de changer
-                   d'écran.
-                */
 
 
                 await stopScanner();
@@ -978,8 +1001,11 @@ async function startScanner() {
             function(errorMessage) {
 
                 /*
-                   Les erreurs normales
-                   de recherche du QR sont ignorées.
+
+                Les erreurs normales
+                de recherche du QR
+                sont ignorées.
+
                 */
 
             }
@@ -1020,7 +1046,7 @@ async function startScanner() {
 
 
 /* =====================================================
-   ARRÊTER LE SCANNER
+   STOP SCANNER
 ===================================================== */
 
 
@@ -1036,9 +1062,7 @@ async function stopScanner() {
 
         }
 
-        catch(error) {
-
-        }
+        catch(error) {}
 
 
         try {
@@ -1047,9 +1071,7 @@ async function stopScanner() {
 
         }
 
-        catch(error) {
-
-        }
+        catch(error) {}
 
 
         scanner = null;
@@ -1071,7 +1093,7 @@ async function stopScanner() {
 
 
 /* =====================================================
-   ANNULER LE SCAN
+   ANNULER
 ===================================================== */
 
 
@@ -1091,26 +1113,11 @@ async function cancelScanner() {
 
 
 /* =====================================================
-   RECONNAISSANCE DU QR
+   TRAITER QR
 ===================================================== */
 
 
 function processQR(text) {
-
-
-    /*
-       Le QR normal est :
-
-       GEEKSTER-001
-
-       Mais cette expression accepte aussi :
-
-       GEEKSTER_001
-
-       ou une URL contenant :
-
-       GEEKSTER-001
-    */
 
 
     const match =
@@ -1170,14 +1177,6 @@ function processQR(text) {
 
 
 
-    /*
-       On copie la carte.
-
-       Cela évite de modifier
-       la base originale.
-    */
-
-
     currentCard = {
 
         ...cards[number],
@@ -1223,7 +1222,7 @@ function playMusic() {
 
 
     /*
-       On nettoie complètement
+       On supprime complètement
        l'ancien lecteur.
     */
 
@@ -1233,39 +1232,22 @@ function playMusic() {
 
 
     /*
-       Si aucune vidéo n'est encore
-       renseignée pour cette carte.
+       Carte sans vidéo.
     */
 
 
     if(!currentCard.youtube) {
 
 
-        player.innerHTML = `
+        document
+            .getElementById("playingNumber")
+            .textContent =
 
-            <div style="
-                height:100%;
-                display:flex;
-                align-items:center;
-                justify-content:center;
-                padding:20px;
-                color:#aaa;
-                text-align:center;
-                line-height:1.5;
-            ">
+            "Carte " +
 
-                🎵<br><br>
+            currentCard.number +
 
-                Carte reconnue !
-
-                <br><br>
-
-                La vidéo YouTube de cette
-                carte sera ajoutée ensuite.
-
-            </div>
-
-        `;
+            " reconnue, mais vidéo non configurée.";
 
 
         showScreen("playerScreen");
@@ -1278,19 +1260,20 @@ function playMusic() {
 
 
     /*
-       Création du vrai lecteur YouTube.
+       Création du lecteur YouTube.
 
-       Pour la carte 001 :
+       Il est volontairement placé
+       dans une zone invisible.
 
-       UtgHZaq0EGs
-
+       Le son continue à être fourni
+       par YouTube, mais aucune image
+       de la vidéo n'est affichée.
     */
 
 
     const iframe =
 
         document.createElement("iframe");
-
 
 
     iframe.src =
@@ -1308,7 +1291,6 @@ function playMusic() {
         "&playsinline=1";
 
 
-
     iframe.allow =
 
         "autoplay; encrypted-media; " +
@@ -1316,12 +1298,23 @@ function playMusic() {
         "picture-in-picture";
 
 
-
     iframe.allowFullscreen = true;
 
 
 
     player.appendChild(iframe);
+
+
+
+    document
+        .getElementById("playingNumber")
+        .textContent =
+
+        "Carte " +
+
+        currentCard.number +
+
+        " • Bonne chance ! 😎";
 
 
 
@@ -1333,7 +1326,7 @@ function playMusic() {
 
 
 /* =====================================================
-   REVELER LA CARTE
+   REVELATION
 ===================================================== */
 
 
@@ -1393,22 +1386,15 @@ function revealCard() {
 async function nextCard() {
 
 
-    /*
-       Si la caméra tourne encore,
-       on l'arrête.
-    */
-
-
     await stopScanner();
-
 
 
     currentCard = null;
 
 
-
     /*
-       On détruit le lecteur YouTube.
+       On arrête aussi le lecteur
+       en le détruisant.
     */
 
 
@@ -1417,16 +1403,14 @@ async function nextCard() {
         .innerHTML = "";
 
 
-
-    /*
-       On remet le bouton scanner.
-    */
+    document
+        .getElementById("playingNumber")
+        .textContent = "";
 
 
     document
         .getElementById("startPanel")
         .style.display = "block";
-
 
 
     showScreen("home");
