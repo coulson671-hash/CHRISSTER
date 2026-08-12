@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Geekster Gaming</title>
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-    <script src="https://www.youtube.com/iframe_api"></script>
 
     <style>
         * {
@@ -129,16 +128,20 @@
             padding: 10px 14px !important;
         }
 
-        /* ZONE AUDIO : invisible mais valide pour le navigateur */
+        /* ZONE AUDIO : Astuce pour rendre le lecteur "invisible" tout en restant 100% fonctionnel pour le navigateur */
         .audio-player {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 200px;
-            height: 200px;
-            opacity: 0.01;
-            pointer-events: none;
-            z-index: -10;
+            bottom: -500px;
+            left: -500px;
+            width: 300px;
+            height: 300px;
+            z-index: -999;
+        }
+
+        .audio-player iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
         }
 
         /* ECRAN MUSIQUE */
@@ -236,10 +239,8 @@
             <button class="secondary" onclick="nextCard()">📷 CARTE SUIVANTE</button>
         </section>
 
-        <!-- LECTEUR AUDIO -->
-        <div class="audio-player">
-            <div id="youtubePlayer"></div>
-        </div>
+        <!-- LECTEUR AUDIO INVISIBLE HORS ECRAN -->
+        <div id="youtubePlayer" class="audio-player"></div>
 
         <!-- REVELATION -->
         <section id="revealScreen" class="screen">
@@ -371,20 +372,6 @@
 
         let scanner = null;
         let currentCard = null;
-        let ytPlayer = null;
-
-        // API YouTube prête
-        function onYouTubeIframeAPIReady() {
-            ytPlayer = new YT.Player('youtubePlayer', {
-                height: '200',
-                width: '200',
-                playerVars: {
-                    'playsinline': 1,
-                    'autoplay': 0,
-                    'controls': 0
-                }
-            });
-        }
 
         function showScreen(id) {
             document.querySelectorAll(".screen").forEach(screen => {
@@ -467,6 +454,9 @@
         function playMusic() {
             if(!currentCard) return;
 
+            const player = document.getElementById("youtubePlayer");
+            player.innerHTML = "";
+
             if(!currentCard.youtube) {
                 document.getElementById("playingNumber").textContent =
                     "Carte " + currentCard.number + " reconnue, mais vidéo non configurée.";
@@ -474,11 +464,12 @@
                 return;
             }
 
-            // Utilisation de l'API YouTube officielle
-            if (ytPlayer && typeof ytPlayer.loadVideoById === 'function') {
-                ytPlayer.loadVideoById(currentCard.youtube);
-                ytPlayer.playVideo();
-            }
+            // Génération de l'iframe avec autoplay activé sur l'action de clic
+            const iframe = document.createElement("iframe");
+            iframe.src = "https://www.youtube-nocookie.com/embed/" + encodeURIComponent(currentCard.youtube) + "?autoplay=1&enablejsapi=1";
+            iframe.allow = "autoplay; encrypted-media";
+
+            player.appendChild(iframe);
 
             document.getElementById("playingNumber").textContent =
                 "Carte " + currentCard.number + " • Bonne chance ! 😎";
@@ -500,11 +491,7 @@
         async function nextCard() {
             await stopScanner();
             currentCard = null;
-
-            if (ytPlayer && typeof ytPlayer.stopVideo === 'function') {
-                ytPlayer.stopVideo();
-            }
-
+            document.getElementById("youtubePlayer").innerHTML = "";
             document.getElementById("playingNumber").textContent = "";
             document.getElementById("startPanel").style.display = "block";
             showScreen("home");
