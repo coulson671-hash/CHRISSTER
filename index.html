@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Geekster Gaming</title>
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
 
     <style>
         * {
@@ -128,22 +129,16 @@
             padding: 10px 14px !important;
         }
 
-        /* ZONE AUDIO INVISIBLE */
+        /* ZONE AUDIO : invisible mais valide pour le navigateur */
         .audio-player {
             position: fixed;
-            width: 1px;
-            height: 1px;
-            left: -100px;
-            top: -100px;
-            opacity: 0;
+            top: 0;
+            left: 0;
+            width: 200px;
+            height: 200px;
+            opacity: 0.01;
             pointer-events: none;
-            overflow: hidden;
-        }
-
-        .audio-player iframe {
-            width: 1px;
-            height: 1px;
-            border: 0;
+            z-index: -10;
         }
 
         /* ECRAN MUSIQUE */
@@ -241,8 +236,10 @@
             <button class="secondary" onclick="nextCard()">📷 CARTE SUIVANTE</button>
         </section>
 
-        <!-- LECTEUR AUDIO INVISIBLE -->
-        <div id="youtubePlayer" class="audio-player"></div>
+        <!-- LECTEUR AUDIO -->
+        <div class="audio-player">
+            <div id="youtubePlayer"></div>
+        </div>
 
         <!-- REVELATION -->
         <section id="revealScreen" class="screen">
@@ -269,118 +266,125 @@
     </div>
 
     <script>
-        /* =====================================================
-           CARTES (LISTE COMPLETE DES 100 CARTES)
-        ===================================================== */
-// 1. BASE DE DONNÉES DES CARTES
-    const cards = {
-  "001": { music: "Pac-Man Theme", game: "Pac-Man", year: 1980, youtube: "0-MONImfI3k" },
-  "002": { music: "Donkey Kong Theme", game: "Donkey Kong", year: 1981, youtube: "Q_a2p8S4f8A" },
-  "003": { music: "Korobeiniki", game: "Tetris", year: 1989, youtube: "NmCCQxVBfyM" },
-  "004": { music: "Overworld Theme", game: "Super Mario Bros", year: 1985, youtube: "NTa6Xbzfq1U" },
-  "005": { music: "Overworld Theme", game: "The Legend of Zelda", year: 1986, youtube: "uyMKWJ5e1kg" },
-  "006": { music: "Vampire Killer", game: "Castlevania", year: 1986, youtube: "0sS3L2Y1g88" },
-  "007": { music: "Main Theme", game: "Final Fantasy", year: 1987, youtube: "44U_s-rR_G0" },
-  "008": { music: "Title Screen", game: "Double Dragon", year: 1987, youtube: "1x1M2L0D9z0" },
-  "009": { music: "Dr Wily Castle", game: "Mega Man 2", year: 1988, youtube: "N4V483aL_vE" },
-  "010": { music: "Moon Stage", game: "DuckTales", year: 1989, youtube: "G_80PQ543rM" },
-  "011": { music: "Title Theme", game: "Alex Kidd", year: 1986, youtube: "2Y5rM_D_O0E" },
-  "012": { music: "Stage 1", game: "Ghouls n Ghosts", year: 1988, youtube: "Xq1E61A1_6c" },
-  "013": { music: "Green Hill Zone", game: "Sonic the Hedgehog", year: 1991, youtube: "SF9LGI8n5Sg" },
-  "014": { music: "Guile Theme", game: "Street Fighter II", year: 1991, youtube: "Y1L8uRApYeQ" },
-  "015": { music: "Overworld Theme", game: "Super Mario World", year: 1990, youtube: "VH8mQRXemuo" },
-  "016": { music: "Tristram Theme", game: "Diablo", year: 1996, youtube: "Q2evigHBEnc" },
-  "017": { music: "Mario Circuit", game: "Super Mario Kart", year: 1992, youtube: "V_J1b67fQno" },
-  "018": { music: "Techno Syndrome", game: "Mortal Kombat", year: 1992, youtube: "EAwWPadFs0E" },
-  "019": { music: "At Dooms Gate", game: "Doom", year: 1993, youtube: "BSsfjHCFFmw" },
-  "020": { music: "Fear of the Heavens", game: "Secret of Mana", year: 1993, youtube: "S1225P88lS8" },
-  "021": { music: "DK Island Swing", game: "Donkey Kong Country", year: 1994, youtube: "hYm5l4nFw1s" },
-  "022": { music: "Main Theme", game: "Chrono Trigger", year: 1995, youtube: "g-s-M34w0yU" },
-  "023": { music: "The Dream Forest", game: "Rayman", year: 1995, youtube: "M430y0F_X_8" },
-  "024": { music: "Bob-omb Battlefield", game: "Super Mario 64", year: 1996, youtube: "YH6Q4aG1-B8" },
-  "025": { music: "Generique Pokemon", game: "Pokemon Rouge et Bleu", year: 1996, youtube: "2m3E3R6O6wU" },
-  "026": { music: "Main Theme", game: "Tomb Raider", year: 1996, youtube: "K9sE1P7Xp18" },
-  "027": { music: "One-Winged Angel", game: "Final Fantasy VII", year: 1997, youtube: "qDD-i6-l-_M" },
-  "028": { music: "Main Theme", game: "GoldenEye 007", year: 1997, youtube: "1s5R1M0L_8U" },
-  "029": { music: "Chant de Saria", game: "Zelda Ocarina of Time", year: 1998, youtube: "15S10N-1_X8" },
-  "030": { music: "Encounter", game: "Metal Gear Solid", year: 1998, youtube: "21a3L-D-p_M" },
-  "031": { music: "Main Theme", game: "Crash Bandicoot 3", year: 1998, youtube: "k4z0P5M0n2M" },
-  "032": { music: "Theme of Laura", game: "Silent Hill", year: 1999, youtube: "6Lb7L-pE_A8" },
-  "033": { music: "Main Theme", game: "Heroes of Might and Magic III", year: 1999, youtube: "15aL-k24L48" },
-  "034": { music: "Main Theme", game: "Age of Empires II", year: 1999, youtube: "215S1aL_L04" },
-  "035": { music: "Buy Mode", game: "Les Sims", year: 2000, youtube: "39S11a_L32k" },
-  "036": { music: "Gerudo Valley", game: "Zelda Majoras Mask", year: 2000, youtube: "0s1_P0l1_04" },
-  "037": { music: "Halo Theme", game: "Halo Combat Evolved", year: 2001, youtube: "0jXTBAGv9ZQ" },
-  "038": { music: "To Zanarkand", game: "Final Fantasy X", year: 2001, youtube: "h-0G_4EJL3U" },
-  "039": { music: "Moonlit Wilderness", game: "Tekken 4", year: 2001, youtube: "kS10P0M_N8k" },
-  "040": { music: "Simple and Clean", game: "Kingdom Hearts", year: 2002, youtube: "Uig8Cc3aL1U" },
-  "041": { music: "Dragon Roost Island", game: "Zelda The Wind Waker", year: 2002, youtube: "wRWq53L4X2U" },
-  "042": { music: "OutTouch", game: "GTA Vice City", year: 2002, youtube: "0s1S92l_104" },
-  "043": { music: "Main Theme", game: "World of Warcraft", year: 2004, youtube: "30230f-mK6g" },
-  "044": { music: "Theme Song", game: "GTA San Andreas", year: 2004, youtube: "W4vt9S1_X0k" },
-  "045": { music: "Snake Eater", game: "Metal Gear Solid 3", year: 2004, youtube: "m1n_L0K_4N0" },
-  "046": { music: "God of War Theme", game: "God of War", year: 2005, youtube: "411S1aL_P40" },
-  "047": { music: "Main Theme", game: "Shadow of the Colossus", year: 2005, youtube: "0m1S12l_04A" },
-  "048": { music: "Main Theme", game: "TES IV Oblivion", year: 2006, youtube: "V3x11L0K_N0" },
-  "049": { music: "Still Alive", game: "Portal", year: 2007, youtube: "Y6ljFaKRTrI" },
-  "050": { music: "Nates Theme", game: "Uncharted", year: 2007, youtube: "hS11A_L004k" },
-  "051": { music: "Gusty Garden Galaxy", game: "Super Mario Galaxy", year: 2007, youtube: "WcHQXwd3G4A" },
-  "052": { music: "Megalovania", game: "Undertale", year: 2015, youtube: "w1923G0D_n4" },
-  "053": { music: "Ezios Family", game: "Assassins Creed II", year: 2009, youtube: "FSVHx23C_NM" },
-  "054": { music: "Sweden", game: "Minecraft", year: 2011, youtube: "aBkTkxKDduc" },
-  "055": { music: "Main Title", game: "Call of Duty MW2", year: 2009, youtube: "4A02dY65654" },
-  "056": { music: "Far Away", game: "Red Dead Redemption", year: 2010, youtube: "7IkvAb6a2rs" },
-  "057": { music: "Dragonborn Theme", game: "TES V Skyrim", year: 2011, youtube: "21S1a_L02k8" },
-  "058": { music: "Gwyn Lord of Cinder", game: "Dark Souls", year: 2011, youtube: "AB6sOhQay9Y" },
-  "059": { music: "Main Theme", game: "Battlefield 3", year: 2011, youtube: "iRNqHi212kE" },
-  "060": { music: "Main Theme", game: "Journey", year: 2012, youtube: "M3hFN8UrBPw" },
-  "061": { music: "Main Theme", game: "The Last of Us", year: 2013, youtube: "Y97u-U0MvJM" },
-  "062": { music: "Sleepwalking", game: "GTA V", year: 2013, youtube: "r39MAnjOisM" },
-  "063": { music: "Main Theme", game: "Dragon Age Inquisition", year: 2014, youtube: "aO_B4kRjA80" },
-  "064": { music: "Silver for Monsters", game: "The Witcher 3", year: 2015, youtube: "UENbMYG3P08" },
-  "065": { music: "Ludwig Holy Blade", game: "Bloodborne", year: 2015, youtube: "ALbVxmaiJE4" },
-  "066": { music: "Megalovania", game: "Undertale", year: 2015, youtube: "ZcoqR9Bwx1Y" },
-  "067": { music: "Rip and Tear", game: "DOOM", year: 2016, youtube: "a6BbvCC0VIU" },
-  "068": { music: "Main Theme", game: "Overwatch", year: 2016, youtube: "F3G8U4A2eK4" },
-  "069": { music: "Main Theme", game: "Zelda Breath of the Wild", year: 2017, youtube: "311S_L002k0" },
-  "070": { music: "Jump Up Super Star", game: "Super Mario Odyssey", year: 2017, youtube: "eYDi46CXC9I" },
-  "071": { music: "Last Surprise", game: "Persona 5", year: 2016, youtube: "eFVj021l01U" },
-  "072": { music: "Botanic Panic", game: "Cuphead", year: 2017, youtube: "3r3X3Z050lU" },
-  "073": { music: "Legends Never Die", game: "League of Legends", year: 2017, youtube: "r6zIGXun57U" },
-  "074": { music: "God of War Theme", game: "God of War", year: 2018, youtube: "HFkT-k34q-g" },
-  "075": { music: "Lifelight", game: "Smash Bros Ultimate", year: 2018, youtube: "EhgDip9XU3I" },
-  "076": { music: "Stand Unshaken", game: "Red Dead Redemption 2", year: 2018, youtube: "cid-V8I1xbc" },
-  "077": { music: "BBs Theme", game: "Death Stranding", year: 2019, youtube: "1m-c-G5_w-M" },
-  "078": { music: "Edge of Dawn", game: "Fire Emblem Three Houses", year: 2019, youtube: "0s1_P01L002" },
-  "079": { music: "I Really Want to Stay at Your House", game: "Cyberpunk 2077", year: 2020, youtube: "KvMY16x11L0" },
-  "080": { music: "Dirtmouth Theme", game: "Hollow Knight", year: 2017, youtube: "My3G53R-aGg" },
-  "081": { music: "Liyue Main Theme", game: "Genshin Impact", year: 2020, youtube: "3388p0fXN_g" },
-  "082": { music: "In the Blood", game: "Hades", year: 2020, youtube: "4X_X1X62Nq4" },
-  "083": { music: "Main Theme", game: "It Takes Two", year: 2021, youtube: "OaM3G3y7Nq0" },
-  "084": { music: "Main Theme", game: "Elden Ring", year: 2022, youtube: "K5p4X5A48gU" },
-  "085": { music: "Main Theme", game: "Stray", year: 2022, youtube: "y3k112344gU" },
-  "086": { music: "Main Theme", game: "God of War Ragnarok", year: 2022, youtube: "hf344N4M822" },
-  "087": { music: "Main Theme", game: "Zelda Tears of the Kingdom", year: 2023, youtube: "53_4a5L44M8" },
-  "088": { music: "Down by the River", game: "Baldurs Gate 3", year: 2023, youtube: "53-k14kM3M8" },
-  "089": { music: "Find the Flame", game: "Final Fantasy XVI", year: 2023, youtube: "3541K002G00" },
-  "090": { music: "Herald of Darkness", game: "Alan Wake 2", year: 2023, youtube: "34M01124M00" },
-  "091": { music: "Astro Bot Theme", game: "Astro Bot", year: 2024, youtube: "33M01124M01" },
-  "092": { music: "Black Myth Theme", game: "Black Myth Wukong", year: 2024, youtube: "33M01124M02" },
-  "093": { music: "Main Theme", game: "Helldivers 2", year: 2024, youtube: "33M01124M03" },
-  "094": { music: "Trailer Theme", game: "GTA VI", year: 2025, youtube: "QdBZY2fkU-0" },
-  "095": { music: "Main Theme", game: "Monster Hunter Wilds", year: 2025, youtube: "33M01124M05" },
-  "096": { music: "Main Theme", game: "Metroid Prime 4", year: 2025, youtube: "33M01124M06" },
-  "097": { music: "Generique FR", game: "Dragon Ball Z", year: 1989, youtube: "1s54G002Y00" },
-  "098": { music: "Hakuna Matata", game: "Le Roi Lion", year: 1994, youtube: "caS8459k0M8" },
-  "099": { music: "Hedwigs Theme", game: "Harry Potter", year: 2001, youtube: "wtHra9tFISY" },
-  "100": { music: "Liberee delivree", game: "La Reine des Neiges", year: 2013, youtube: "wQP9XZc2I_c" }
-};
+        const cards = {
+            "001": { music: "Pac-Man Theme", game: "Pac-Man", year: 1980, youtube: "0-MONImfI3k" },
+            "002": { music: "Donkey Kong Theme", game: "Donkey Kong", year: 1981, youtube: "Q_a2p8S4f8A" },
+            "003": { music: "Korobeiniki", game: "Tetris", year: 1989, youtube: "NmCCQxVBfyM" },
+            "004": { music: "Overworld Theme", game: "Super Mario Bros", year: 1985, youtube: "NTa6Xbzfq1U" },
+            "005": { music: "Overworld Theme", game: "The Legend of Zelda", year: 1986, youtube: "uyMKWJ5e1kg" },
+            "006": { music: "Vampire Killer", game: "Castlevania", year: 1986, youtube: "0sS3L2Y1g88" },
+            "007": { music: "Main Theme", game: "Final Fantasy", year: 1987, youtube: "44U_s-rR_G0" },
+            "008": { music: "Title Screen", game: "Double Dragon", year: 1987, youtube: "1x1M2L0D9z0" },
+            "009": { music: "Dr Wily Castle", game: "Mega Man 2", year: 1988, youtube: "N4V483aL_vE" },
+            "010": { music: "Moon Stage", game: "DuckTales", year: 1989, youtube: "G_80PQ543rM" },
+            "011": { music: "Title Theme", game: "Alex Kidd", year: 1986, youtube: "2Y5rM_D_O0E" },
+            "012": { music: "Stage 1", game: "Ghouls n Ghosts", year: 1988, youtube: "Xq1E61A1_6c" },
+            "013": { music: "Green Hill Zone", game: "Sonic the Hedgehog", year: 1991, youtube: "SF9LGI8n5Sg" },
+            "014": { music: "Guile Theme", game: "Street Fighter II", year: 1991, youtube: "Y1L8uRApYeQ" },
+            "015": { music: "Overworld Theme", game: "Super Mario World", year: 1990, youtube: "VH8mQRXemuo" },
+            "016": { music: "Tristram Theme", game: "Diablo", year: 1996, youtube: "Q2evigHBEnc" },
+            "017": { music: "Mario Circuit", game: "Super Mario Kart", year: 1992, youtube: "V_J1b67fQno" },
+            "018": { music: "Techno Syndrome", game: "Mortal Kombat", year: 1992, youtube: "EAwWPadFs0E" },
+            "019": { music: "At Dooms Gate", game: "Doom", year: 1993, youtube: "BSsfjHCFFmw" },
+            "020": { music: "Fear of the Heavens", game: "Secret of Mana", year: 1993, youtube: "S1225P88lS8" },
+            "021": { music: "DK Island Swing", game: "Donkey Kong Country", year: 1994, youtube: "hYm5l4nFw1s" },
+            "022": { music: "Main Theme", game: "Chrono Trigger", year: 1995, youtube: "g-s-M34w0yU" },
+            "023": { music: "The Dream Forest", game: "Rayman", year: 1995, youtube: "M430y0F_X_8" },
+            "024": { music: "Bob-omb Battlefield", game: "Super Mario 64", year: 1996, youtube: "YH6Q4aG1-B8" },
+            "025": { music: "Generique Pokemon", game: "Pokemon Rouge et Bleu", year: 1996, youtube: "2m3E3R6O6wU" },
+            "026": { music: "Main Theme", game: "Tomb Raider", year: 1996, youtube: "K9sE1P7Xp18" },
+            "027": { music: "One-Winged Angel", game: "Final Fantasy VII", year: 1997, youtube: "qDD-i6-l-_M" },
+            "028": { music: "Main Theme", game: "GoldenEye 007", year: 1997, youtube: "1s5R1M0L_8U" },
+            "029": { music: "Chant de Saria", game: "Zelda Ocarina of Time", year: 1998, youtube: "15S10N-1_X8" },
+            "030": { music: "Encounter", game: "Metal Gear Solid", year: 1998, youtube: "21a3L-D-p_M" },
+            "031": { music: "Main Theme", game: "Crash Bandicoot 3", year: 1998, youtube: "k4z0P5M0n2M" },
+            "032": { music: "Theme of Laura", game: "Silent Hill", year: 1999, youtube: "6Lb7L-pE_A8" },
+            "033": { music: "Main Theme", game: "Heroes of Might and Magic III", year: 1999, youtube: "15aL-k24L48" },
+            "034": { music: "Main Theme", game: "Age of Empires II", year: 1999, youtube: "215S1aL_L04" },
+            "035": { music: "Buy Mode", game: "Les Sims", year: 2000, youtube: "39S11a_L32k" },
+            "036": { music: "Gerudo Valley", game: "Zelda Majoras Mask", year: 2000, youtube: "0s1_P0l1_04" },
+            "037": { music: "Halo Theme", game: "Halo Combat Evolved", year: 2001, youtube: "0jXTBAGv9ZQ" },
+            "038": { music: "To Zanarkand", game: "Final Fantasy X", year: 2001, youtube: "h-0G_4EJL3U" },
+            "039": { music: "Moonlit Wilderness", game: "Tekken 4", year: 2001, youtube: "kS10P0M_N8k" },
+            "040": { music: "Simple and Clean", game: "Kingdom Hearts", year: 2002, youtube: "Uig8Cc3aL1U" },
+            "041": { music: "Dragon Roost Island", game: "Zelda The Wind Waker", year: 2002, youtube: "wRWq53L4X2U" },
+            "042": { music: "OutTouch", game: "GTA Vice City", year: 2002, youtube: "0s1S92l_104" },
+            "043": { music: "Main Theme", game: "World of Warcraft", year: 2004, youtube: "30230f-mK6g" },
+            "044": { music: "Theme Song", game: "GTA San Andreas", year: 2004, youtube: "W4vt9S1_X0k" },
+            "045": { music: "Snake Eater", game: "Metal Gear Solid 3", year: 2004, youtube: "m1n_L0K_4N0" },
+            "046": { music: "God of War Theme", game: "God of War", year: 2005, youtube: "411S1aL_P40" },
+            "047": { music: "Main Theme", game: "Shadow of the Colossus", year: 2005, youtube: "0m1S12l_04A" },
+            "048": { music: "Main Theme", game: "TES IV Oblivion", year: 2006, youtube: "V3x11L0K_N0" },
+            "049": { music: "Still Alive", game: "Portal", year: 2007, youtube: "Y6ljFaKRTrI" },
+            "050": { music: "Nates Theme", game: "Uncharted", year: 2007, youtube: "hS11A_L004k" },
+            "051": { music: "Gusty Garden Galaxy", game: "Super Mario Galaxy", year: 2007, youtube: "WcHQXwd3G4A" },
+            "052": { music: "Megalovania", game: "Undertale", year: 2015, youtube: "w1923G0D_n4" },
+            "053": { music: "Ezios Family", game: "Assassins Creed II", year: 2009, youtube: "FSVHx23C_NM" },
+            "054": { music: "Sweden", game: "Minecraft", year: 2011, youtube: "aBkTkxKDduc" },
+            "055": { music: "Main Title", game: "Call of Duty MW2", year: 2009, youtube: "4A02dY65654" },
+            "056": { music: "Far Away", game: "Red Dead Redemption", year: 2010, youtube: "7IkvAb6a2rs" },
+            "057": { music: "Dragonborn Theme", game: "TES V Skyrim", year: 2011, youtube: "21S1a_L02k8" },
+            "058": { music: "Gwyn Lord of Cinder", game: "Dark Souls", year: 2011, youtube: "AB6sOhQay9Y" },
+            "059": { music: "Main Theme", game: "Battlefield 3", year: 2011, youtube: "iRNqHi212kE" },
+            "060": { music: "Main Theme", game: "Journey", year: 2012, youtube: "M3hFN8UrBPw" },
+            "061": { music: "Main Theme", game: "The Last of Us", year: 2013, youtube: "Y97u-U0MvJM" },
+            "062": { music: "Sleepwalking", game: "GTA V", year: 2013, youtube: "r39MAnjOisM" },
+            "063": { music: "Main Theme", game: "Dragon Age Inquisition", year: 2014, youtube: "aO_B4kRjA80" },
+            "064": { music: "Silver for Monsters", game: "The Witcher 3", year: 2015, youtube: "UENbMYG3P08" },
+            "065": { music: "Ludwig Holy Blade", game: "Bloodborne", year: 2015, youtube: "ALbVxmaiJE4" },
+            "066": { music: "Megalovania", game: "Undertale", year: 2015, youtube: "ZcoqR9Bwx1Y" },
+            "067": { music: "Rip and Tear", game: "DOOM", year: 2016, youtube: "a6BbvCC0VIU" },
+            "068": { music: "Main Theme", game: "Overwatch", year: 2016, youtube: "F3G8U4A2eK4" },
+            "069": { music: "Main Theme", game: "Zelda Breath of the Wild", year: 2017, youtube: "311S_L002k0" },
+            "070": { music: "Jump Up Super Star", game: "Super Mario Odyssey", year: 2017, youtube: "eYDi46CXC9I" },
+            "071": { music: "Last Surprise", game: "Persona 5", year: 2016, youtube: "eFVj021l01U" },
+            "072": { music: "Botanic Panic", game: "Cuphead", year: 2017, youtube: "3r3X3Z050lU" },
+            "073": { music: "Legends Never Die", game: "League of Legends", year: 2017, youtube: "r6zIGXun57U" },
+            "074": { music: "God of War Theme", game: "God of War", year: 2018, youtube: "HFkT-k34q-g" },
+            "075": { music: "Lifelight", game: "Smash Bros Ultimate", year: 2018, youtube: "EhgDip9XU3I" },
+            "076": { music: "Stand Unshaken", game: "Red Dead Redemption 2", year: 2018, youtube: "cid-V8I1xbc" },
+            "077": { music: "BBs Theme", game: "Death Stranding", year: 2019, youtube: "1m-c-G5_w-M" },
+            "078": { music: "Edge of Dawn", game: "Fire Emblem Three Houses", year: 2019, youtube: "0s1_P01L002" },
+            "079": { music: "I Really Want to Stay at Your House", game: "Cyberpunk 2077", year: 2020, youtube: "KvMY16x11L0" },
+            "080": { music: "Dirtmouth Theme", game: "Hollow Knight", year: 2017, youtube: "My3G53R-aGg" },
+            "081": { music: "Liyue Main Theme", game: "Genshin Impact", year: 2020, youtube: "3388p0fXN_g" },
+            "082": { music: "In the Blood", game: "Hades", year: 2020, youtube: "4X_X1X62Nq4" },
+            "083": { music: "Main Theme", game: "It Takes Two", year: 2021, youtube: "OaM3G3y7Nq0" },
+            "084": { music: "Main Theme", game: "Elden Ring", year: 2022, youtube: "K5p4X5A48gU" },
+            "085": { music: "Main Theme", game: "Stray", year: 2022, youtube: "y3k112344gU" },
+            "086": { music: "Main Theme", game: "God of War Ragnarok", year: 2022, youtube: "hf344N4M822" },
+            "087": { music: "Main Theme", game: "Zelda Tears of the Kingdom", year: 2023, youtube: "53_4a5L44M8" },
+            "088": { music: "Down by the River", game: "Baldurs Gate 3", year: 2023, youtube: "53-k14kM3M8" },
+            "089": { music: "Find the Flame", game: "Final Fantasy XVI", year: 2023, youtube: "3541K002G00" },
+            "090": { music: "Herald of Darkness", game: "Alan Wake 2", year: 2023, youtube: "34M01124M00" },
+            "091": { music: "Astro Bot Theme", game: "Astro Bot", year: 2024, youtube: "33M01124M01" },
+            "092": { music: "Black Myth Theme", game: "Black Myth Wukong", year: 2024, youtube: "33M01124M02" },
+            "093": { music: "Main Theme", game: "Helldivers 2", year: 2024, youtube: "33M01124M03" },
+            "094": { music: "Trailer Theme", game: "GTA VI", year: 2025, youtube: "QdBZY2fkU-0" },
+            "095": { music: "Main Theme", game: "Monster Hunter Wilds", year: 2025, youtube: "33M01124M05" },
+            "096": { music: "Main Theme", game: "Metroid Prime 4", year: 2025, youtube: "33M01124M06" },
+            "097": { music: "Generique FR", game: "Dragon Ball Z", year: 1989, youtube: "1s54G002Y00" },
+            "098": { music: "Hakuna Matata", game: "Le Roi Lion", year: 1994, youtube: "caS8459k0M8" },
+            "099": { music: "Hedwigs Theme", game: "Harry Potter", year: 2001, youtube: "wtHra9tFISY" },
+            "100": { music: "Liberee delivree", game: "La Reine des Neiges", year: 2013, youtube: "wQP9XZc2I_c" }
+        };
 
-        /* =====================================================
-           VARIABLES ET LOGIQUE DU JEU
-        ===================================================== */
         let scanner = null;
         let currentCard = null;
+        let ytPlayer = null;
+
+        // API YouTube prête
+        function onYouTubeIframeAPIReady() {
+            ytPlayer = new YT.Player('youtubePlayer', {
+                height: '200',
+                width: '200',
+                playerVars: {
+                    'playsinline': 1,
+                    'autoplay': 0,
+                    'controls': 0
+                }
+            });
+        }
 
         function showScreen(id) {
             document.querySelectorAll(".screen").forEach(screen => {
@@ -463,9 +467,6 @@
         function playMusic() {
             if(!currentCard) return;
 
-            const player = document.getElementById("youtubePlayer");
-            player.innerHTML = "";
-
             if(!currentCard.youtube) {
                 document.getElementById("playingNumber").textContent =
                     "Carte " + currentCard.number + " reconnue, mais vidéo non configurée.";
@@ -473,12 +474,11 @@
                 return;
             }
 
-            const iframe = document.createElement("iframe");
-            iframe.src = "https://www.youtube.com/embed/" + encodeURIComponent(currentCard.youtube) + "?autoplay=1&rel=0&playsinline=1";
-            iframe.allow = "autoplay; encrypted-media; picture-in-picture";
-            iframe.allowFullscreen = true;
-
-            player.appendChild(iframe);
+            // Utilisation de l'API YouTube officielle
+            if (ytPlayer && typeof ytPlayer.loadVideoById === 'function') {
+                ytPlayer.loadVideoById(currentCard.youtube);
+                ytPlayer.playVideo();
+            }
 
             document.getElementById("playingNumber").textContent =
                 "Carte " + currentCard.number + " • Bonne chance ! 😎";
@@ -500,7 +500,11 @@
         async function nextCard() {
             await stopScanner();
             currentCard = null;
-            document.getElementById("youtubePlayer").innerHTML = "";
+
+            if (ytPlayer && typeof ytPlayer.stopVideo === 'function') {
+                ytPlayer.stopVideo();
+            }
+
             document.getElementById("playingNumber").textContent = "";
             document.getElementById("startPanel").style.display = "block";
             showScreen("home");
