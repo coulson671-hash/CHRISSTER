@@ -376,54 +376,6 @@
   "100": { music: "Liberee delivree", game: "La Reine des Neiges", year: 2013, youtube: "wQP9XZc2I_c" }
 };
 
-    // 2. RÉCUPÉRATION DE L'ID DANS L'URL (?id=004 ou ?id=204)
-    const urlParams = new URLSearchParams(window.location.search);
-    let cardId = urlParams.get('id');
-
-    // Petit ajustement : si l'URL passe "4", on le transforme en "004" pour correspondre à tes clés
-    if (cardId && cardId.length < 3) {
-      cardId = cardId.padStart(3, '0');
-    }
-
-    const currentCard = cards[cardId];
-    let player;
-
-    // 3. INITIALISATION DE LA CARTE
-    if (currentCard) {
-      document.getElementById('card-id').textContent = `Carte #${cardId}`;
-      document.getElementById('ans-title').textContent = currentCard.game;
-      document.getElementById('ans-track').textContent = currentCard.music;
-      document.getElementById('ans-year').textContent = currentCard.year;
-    } else {
-      document.getElementById('card-id').textContent = "Erreur";
-      alert("Carte introuvable ! Vérifiez l'ID dans l'URL.");
-    }
-
-    // 4. LECTEUR YOUTUBE
-    function onYouTubeIframeAPIReady() {
-      if (currentCard && currentCard.youtube) {
-        player = new YT.Player('player', {
-          height: '1',
-          width: '1',
-          videoId: currentCard.youtube,
-          playerVars: {
-            'playsinline': 1,
-            'autoplay': 0,
-            'controls': 0
-          }
-        });
-      }
-    }
-
-    function playAudio() {
-      if (player && player.playVideo) {
-        player.playVideo();
-      }
-    }
-
-    function revealAnswer() {
-      document.getElementById('answer').style.display = 'block';
-    }
         /* =====================================================
            VARIABLES ET LOGIQUE DU JEU
         ===================================================== */
