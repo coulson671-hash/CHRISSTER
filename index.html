@@ -272,7 +272,8 @@
         /* =====================================================
            CARTES (LISTE COMPLETE DES 100 CARTES)
         ===================================================== */
-const cards = {
+// 1. BASE DE DONNÉES DES CARTES
+    const cards = {
       "001": { music: "Pac-Man Theme", game: "Pac-Man", year: 1980, youtube: "0-MONImfI3k" },
       "002": { music: "Donkey Kong Theme", game: "Donkey Kong", year: 1981, youtube: "Q_a2p8S4f8A" },
       "003": { music: "Korobeiniki", game: "Tetris", year: 1989, youtube: "NmCCQxVBfyM" },
@@ -281,6 +282,55 @@ const cards = {
       // ... Tes 400 cartes s'insèrent ici
       "204": { music: "Overworld Theme", game: "Super Mario Bros", year: 1985, youtube: "NTa6Xbzfq1U" }
     };
+
+    // 2. RÉCUPÉRATION DE L'ID DANS L'URL (?id=004 ou ?id=204)
+    const urlParams = new URLSearchParams(window.location.search);
+    let cardId = urlParams.get('id');
+
+    // Petit ajustement : si l'URL passe "4", on le transforme en "004" pour correspondre à tes clés
+    if (cardId && cardId.length < 3) {
+      cardId = cardId.padStart(3, '0');
+    }
+
+    const currentCard = cards[cardId];
+    let player;
+
+    // 3. INITIALISATION DE LA CARTE
+    if (currentCard) {
+      document.getElementById('card-id').textContent = `Carte #${cardId}`;
+      document.getElementById('ans-title').textContent = currentCard.game;
+      document.getElementById('ans-track').textContent = currentCard.music;
+      document.getElementById('ans-year').textContent = currentCard.year;
+    } else {
+      document.getElementById('card-id').textContent = "Erreur";
+      alert("Carte introuvable ! Vérifiez l'ID dans l'URL.");
+    }
+
+    // 4. LECTEUR YOUTUBE
+    function onYouTubeIframeAPIReady() {
+      if (currentCard && currentCard.youtube) {
+        player = new YT.Player('player', {
+          height: '1',
+          width: '1',
+          videoId: currentCard.youtube,
+          playerVars: {
+            'playsinline': 1,
+            'autoplay': 0,
+            'controls': 0
+          }
+        });
+      }
+    }
+
+    function playAudio() {
+      if (player && player.playVideo) {
+        player.playVideo();
+      }
+    }
+
+    function revealAnswer() {
+      document.getElementById('answer').style.display = 'block';
+    }
         /* =====================================================
            VARIABLES ET LOGIQUE DU JEU
         ===================================================== */
