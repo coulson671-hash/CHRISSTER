@@ -577,6 +577,54 @@ async function nextCard() {
     document.getElementById("startPanel").style.display = "block";
     showScreen("home");
    }
+
+        // Fonction pour basculer sur le mode Blind Test depuis le lecteur
+function startBlindTestMode() {
+    if(!currentCard) return;
+    
+    // On récupère le conteneur YouTube et on le déplace ou le réécrit sur l'écran BT
+    const playerBT = document.getElementById("youtubePlayerBT");
+    playerBT.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${currentCard.youtube}?autoplay=1&enablejsapi=1&rel=0&modestbranding=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+    
+    document.getElementById("btPlayingNumber").textContent = "Blind Test - " + currentCard.category;
+    document.getElementById("btClues").innerHTML = ""; // On remet les indices à zéro
+    document.getElementById("btUserGuess").value = ""; // On vide le champ texte
+    
+    showScreen("blindTestScreen");
+}
+
+// Afficher la première lettre
+function showBTLetter() {
+    if(!currentCard) return;
+    const firstLetter = currentCard.game.charAt(0).toUpperCase();
+    document.getElementById("btClues").innerHTML += `<br>Indice 1ère lettre : <strong>${firstLetter}...</strong>`;
+}
+
+// Afficher la date
+function showBTDate() {
+    if(!currentCard) return;
+    document.getElementById("btClues").innerHTML += `<br>Indice Année : <strong>${currentCard.date}</strong>`;
+}
+
+// Vérifier la réponse tapée par l'utilisateur
+function checkBTGuess() {
+    const userGuess = document.getElementById("btUserGuess").value.trim().toLowerCase();
+    const correctGame = currentCard.game.trim().toLowerCase();
+
+    if (userGuess === "") return;
+
+    if (userGuess === correctGame) {
+        let audio = new Audio('https://www.myinstants.com/media/sounds/tada_1.mp3');
+        audio.play().catch(e => {});
+        alert("🎉 Bravo, c'est gagné ! C'était bien : " + currentCard.game);
+        revealCard(); // On bascule sur l'écran de révélation classique
+    } else {
+        let audio = new Audio('https://www.myinstants.com/media/sounds/bruh-sound-effect.mp3');
+        audio.play().catch(e => {});
+        alert("❌ Non, ce n'est pas ça ! Retentez.");
+        document.getElementById("btUserGuess").value = "";
+    }
+}
     </script>
 </body>
 </html>
