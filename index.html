@@ -493,9 +493,10 @@
             document.getElementById(id).classList.add("active");
         }
 
-        async function startScanner() {
-            document.getElementById("startPanel").style.display = "none";
-            document.getElementById("scannerPanel").style.display = "block";
+      async function startScanner() {
+            // Au lieu de manipuler le display, on utilise ton gestionnaire d'écrans
+            showScreen("scannerPanel"); // Assure-toi que ton conteneur s'appelle bien "scannerPanel" et a la classe "screen"
+            
             scanner = new Html5Qrcode("reader");
             try {
                 await scanner.start({ facingMode: "environment" }, { fps: 10, qrbox: 240 }, async (text) => {
@@ -507,6 +508,20 @@
                 document.getElementById("errorMessage").textContent = "Accès caméra refusé ou indisponible.";
                 showScreen("errorScreen");
             }
+        }
+
+        async function stopScanner() {
+            if(scanner) { 
+                try { 
+                    await scanner.stop(); 
+                } catch(e){} 
+                scanner = null; 
+            }
+        }
+
+        async function cancelScanner() {
+            await stopScanner();
+            showScreen("home"); // Retourne à l'écran d'accueil via ta fonction
         }
 
         async function stopScanner() {
