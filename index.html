@@ -17,6 +17,10 @@
         .panel { background: #202020; border-radius: 18px; padding: 20px; margin-top: 14px; text-align: center; }
         button { width: 100%; border: 0; border-radius: 14px; padding: 17px; margin-top: 12px; font-size: 18px; font-weight: bold; cursor: pointer; color: white; background: #e50914; }
         button.secondary { background: #303030; }
+        button.success { background: #28a745; }
+        button.info { background: #17a2b8; }
+        button.warning { background: #ffc107; color: black; }
+        input[type="text"] { width: 100%; padding: 14px; font-size: 16px; border-radius: 10px; border: 1px solid #444; background: #303030; color: white; margin-bottom: 10px; }
         #scannerPanel { display: none; background: #000; border-radius: 18px; overflow: hidden; }
         #reader { width: 100%; min-height: 310px; }
         .audio-player { position: fixed; bottom: -500px; left: -500px; width: 300px; height: 300px; z-index: -999; }
@@ -34,6 +38,7 @@
             <div class="subtitle">🎬 ANIMATION & MANGA</div>
         </header>
 
+        <!-- 1. ACCUEIL / SCANNER -->
         <section id="home" class="screen active">
             <div id="startPanel" class="panel">
                 <h2>Prêt à jouer ?</h2>
@@ -46,6 +51,7 @@
             </div>
         </section>
 
+        <!-- 2. PRÊT -->
         <section id="readyScreen" class="screen">
             <div class="panel">
                 <h2>MUSIQUE PRÊTE</h2>
@@ -55,17 +61,43 @@
             <button class="secondary" onclick="revealCard()">👀 RÉVÉLER LA CARTE</button>
         </section>
 
+        <!-- 3. LECTURE CLASSIQUE -->
         <section id="playerScreen" class="screen">
             <div class="panel">
                 <h2>🎵 MUSIQUE EN COURS</h2>
                 <div id="playingNumber"></div>
             </div>
+            <!-- Bouton Vert pour basculer sur le Blind Test Interactif -->
+            <button class="success" onclick="startBlindTestMode()">🎯 LANCER LE BLIND TEST INTERACTIF</button>
             <button class="secondary" onclick="revealCard()">👀 RÉVÉLER LA CARTE</button>
             <button class="secondary" onclick="nextCard()">📷 CARTE SUIVANTE</button>
         </section>
 
-        <div id="youtubePlayer" class="audio-player"></div>
+        <!-- 4. NOUVEL ÉCRAN : BLIND TEST INTERACTIF -->
+        <section id="blindTestScreen" class="screen">
+            <div class="panel">
+                <h2>🎯 BLIND TEST INTERACTIF</h2>
+                <div id="btPlayingNumber" style="margin-bottom: 15px; font-weight: bold;"></div>
+                
+                <!-- Champ pour taper la réponse -->
+                <input type="text" id="btUserGuess" placeholder="Tape ton œuvre ici...">
+                <button onclick="checkBTGuess()">VALIDER LA RÉPONSE</button>
 
+                <!-- Boutons d'indices -->
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button class="info" onclick="showBTLetter()" style="margin-top:0;">💡 1ère lettre</button>
+                    <button class="warning" onclick="showBTDate()" style="margin-top:0;">📅 Année</button>
+                </div>
+
+                <div id="btClues" style="margin-top: 15px; font-weight: bold; color: #f5be32; font-size: 16px;"></div>
+            </div>
+            <button class="secondary" onclick="revealCard()">🔍 RÉVÉLER LA CARTE (Personne n'a trouvé)</button>
+        </section>
+
+        <div id="youtubePlayer" class="audio-player"></div>
+        <div id="youtubePlayerBT" class="audio-player"></div>
+
+        <!-- 5. RÉVÉLATION FINALE -->
         <section id="revealScreen" class="screen">
             <div class="panel">
                 <h2>🎉 RÉVÉLATION</h2>
@@ -73,10 +105,17 @@
                 <div id="gameTitle" class="game-title"></div>
                 <div id="cardDate" class="card-date"></div>
                 <div id="cardNumber" class="card-number"></div>
+
+                <!-- Boutons de validation / score avec sons -->
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button class="success" onclick="validateAnswer(true)" style="margin-top:0;">✅ BIEN JOUÉ !</button>
+                    <button onclick="validateAnswer(false)" style="background: #e50914; margin-top:0;">❌ ERREUR</button>
+                </div>
             </div>
-            <button onclick="nextCard()">📷 CARTE SUIVANTE</button>
+            <button class="secondary" onclick="nextCard()">📷 CARTE SUIVANTE</button>
         </section>
 
+        <!-- 6. ERREUR -->
         <section id="errorScreen" class="screen">
             <div class="panel">
                 <h2>❌ ERREUR</h2>
@@ -486,145 +525,149 @@
         };
 
 let scanner = null;
-let currentCard = null;
+        let currentCard = null;
 
-function showScreen(id) {
-    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-    const target = document.getElementById(id);
-    if(target) target.classList.add("active");
-}
+        function showScreen(id) {
+            document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+            const target = document.getElementById(id);
+            if(target) target.classList.add("active");
+        }
 
-async function startScanner() {
-    document.getElementById("startPanel").style.display = "none";
-    document.getElementById("scannerPanel").style.display = "block";
-    
-    if (typeof Html5Qrcode === 'undefined') {
-        alert("La bibliothèque du scanner n'est pas chargée !");
-        return;
-    }
-
-    scanner = new Html5Qrcode("reader");
-    try {
-        await scanner.start(
-            { facingMode: "environment" }, 
-            { fps: 10, qrbox: 240 }, 
-            async (text) => {
-                await stopScanner();
-                processQR(text);
+        async function startScanner() {
+            document.getElementById("startPanel").style.display = "none";
+            document.getElementById("scannerPanel").style.display = "block";
+            
+            if (typeof Html5Qrcode === 'undefined') {
+                alert("La bibliothèque du scanner n'est pas chargée !");
+                return;
             }
-        );
-    } catch(e) {
-        await stopScanner();
-        document.getElementById("errorMessage").textContent = "Accès caméra refusé ou indisponible.";
-        showScreen("errorScreen");
-    }
-}
 
-async function stopScanner() {
-    if(scanner) { 
-        try { 
-            await scanner.stop(); 
-        } catch(e){} 
-        scanner = null; 
-    }
-    document.getElementById("scannerPanel").style.display = "none";
-}
+            scanner = new Html5Qrcode("reader");
+            try {
+                await scanner.start(
+                    { facingMode: "environment" }, 
+                    { fps: 10, qrbox: 240 }, 
+                    async (text) => {
+                        await stopScanner();
+                        processQR(text);
+                    }
+                );
+            } catch(e) {
+                await stopScanner();
+                document.getElementById("errorMessage").textContent = "Accès caméra refusé ou indisponible.";
+                showScreen("errorScreen");
+            }
+        }
 
-async function cancelScanner() {
-    await stopScanner();
-    document.getElementById("startPanel").style.display = "block";
-}
+        async function stopScanner() {
+            if(scanner) { 
+                try { await scanner.stop(); } catch(e){} 
+                scanner = null; 
+            }
+            document.getElementById("scannerPanel").style.display = "none";
+        }
 
-function processQR(text) {
-    const match = String(text).match(/GEEKSTER[-_]?(\d{1,3})/i);
-    if(!match) {
-        document.getElementById("errorMessage").textContent = "Code QR non reconnu (" + text + ")";
-        showScreen("errorScreen");
-        return;
-    }
-    const number = match[1].padStart(3, "0");
-    if(!cards[number]) {
-        document.getElementById("errorMessage").textContent = "Carte inconnue : " + number;
-        showScreen("errorScreen");
-        return;
-    }
-    currentCard = { ...cards[number], number: number };
-    document.getElementById("readyNumber").textContent = number;
-    showScreen("readyScreen");
-}
+        async function cancelScanner() {
+            await stopScanner();
+            document.getElementById("startPanel").style.display = "block";
+        }
 
-function playMusic() {
-    if(!currentCard) return;
-    const player = document.getElementById("youtubePlayer");
-    player.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${currentCard.youtube}?autoplay=1&enablejsapi=1&rel=0&modestbranding=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-    document.getElementById("playingNumber").textContent = currentCard.category;
-    showScreen("playerScreen");
-}
+        function processQR(text) {
+            const match = String(text).match(/GEEKSTER[-_]?(\d{1,3})/i);
+            if(!match) {
+                document.getElementById("errorMessage").textContent = "Code QR non reconnu (" + text + ")";
+                showScreen("errorScreen");
+                return;
+            }
+            const number = match[1].padStart(3, "0");
+            if(!cards[number]) {
+                document.getElementById("errorMessage").textContent = "Carte inconnue : " + number;
+                showScreen("errorScreen");
+                return;
+            }
+            currentCard = { ...cards[number], number: number };
+            document.getElementById("readyNumber").textContent = number;
+            showScreen("readyScreen");
+        }
 
-function revealCard() {
-    if(!currentCard) return;
-    document.getElementById("musicTitle").textContent = currentCard.music;
-    document.getElementById("gameTitle").textContent = currentCard.game;
-    document.getElementById("cardDate").textContent = "📅 " + currentCard.date;
-    document.getElementById("cardNumber").textContent = currentCard.category;
-    showScreen("revealScreen");
-}
+        function playMusic() {
+            if(!currentCard) return;
+            const player = document.getElementById("youtubePlayer");
+            player.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${currentCard.youtube}?autoplay=1&enablejsapi=1&rel=0&modestbranding=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+            document.getElementById("playingNumber").textContent = "Carte n°" + currentCard.number;
+            showScreen("playerScreen");
+        }
 
-async function nextCard() {
-    await stopScanner();
-    currentCard = null;
-    document.getElementById("youtubePlayer").innerHTML = "";
-    document.getElementById("startPanel").style.display = "block";
-    showScreen("home");
-   }
+        // Mode Blind Test Interactif
+        function startBlindTestMode() {
+            if(!currentCard) return;
+            const playerBT = document.getElementById("youtubePlayerBT");
+            playerBT.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${currentCard.youtube}?autoplay=1&enablejsapi=1&rel=0&modestbranding=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+            document.getElementById("btPlayingNumber").textContent = "Carte n°" + currentCard.number;
+            document.getElementById("btClues").innerHTML = "";
+            document.getElementById("btUserGuess").value = "";
+            showScreen("blindTestScreen");
+        }
 
-        // Fonction pour basculer sur le mode Blind Test depuis le lecteur
-function startBlindTestMode() {
-    if(!currentCard) return;
-    
-    // On récupère le conteneur YouTube et on le déplace ou le réécrit sur l'écran BT
-    const playerBT = document.getElementById("youtubePlayerBT");
-    playerBT.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${currentCard.youtube}?autoplay=1&enablejsapi=1&rel=0&modestbranding=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-    
-    document.getElementById("btPlayingNumber").textContent = "Blind Test - " + currentCard.category;
-    document.getElementById("btClues").innerHTML = ""; // On remet les indices à zéro
-    document.getElementById("btUserGuess").value = ""; // On vide le champ texte
-    
-    showScreen("blindTestScreen");
-}
+        function showBTLetter() {
+            if(!currentCard) return;
+            const firstLetter = currentCard.game.charAt(0).toUpperCase();
+            document.getElementById("btClues").innerHTML = `💡 Indice - 1ère lettre : ${firstLetter}...`;
+        }
 
-// Afficher la première lettre
-function showBTLetter() {
-    if(!currentCard) return;
-    const firstLetter = currentCard.game.charAt(0).toUpperCase();
-    document.getElementById("btClues").innerHTML += `<br>Indice 1ère lettre : <strong>${firstLetter}...</strong>`;
-}
+        function showBTDate() {
+            if(!currentCard) return;
+            document.getElementById("btClues").innerHTML += `<br>📅 Indice - Année : ${currentCard.date}`;
+        }
 
-// Afficher la date
-function showBTDate() {
-    if(!currentCard) return;
-    document.getElementById("btClues").innerHTML += `<br>Indice Année : <strong>${currentCard.date}</strong>`;
-}
+        function checkBTGuess() {
+            const userGuess = document.getElementById("btUserGuess").value.trim().toLowerCase();
+            const correctGame = currentCard.game.trim().toLowerCase();
 
-// Vérifier la réponse tapée par l'utilisateur
-function checkBTGuess() {
-    const userGuess = document.getElementById("btUserGuess").value.trim().toLowerCase();
-    const correctGame = currentCard.game.trim().toLowerCase();
+            if (userGuess === "") return;
 
-    if (userGuess === "") return;
+            if (userGuess === correctGame) {
+                let audio = new Audio('https://www.myinstants.com/media/sounds/tada_1.mp3');
+                audio.play().catch(e => {});
+                alert("🎉 Bravo, c'est gagné ! C'était bien : " + currentCard.game);
+                revealCard();
+            } else {
+                let audio = new Audio('https://www.myinstants.com/media/sounds/bruh-sound-effect.mp3');
+                audio.play().catch(e => {});
+                alert("❌ Non, ce n'est pas ça ! Retentez.");
+                document.getElementById("btUserGuess").value = "";
+            }
+        }
 
-    if (userGuess === correctGame) {
-        let audio = new Audio('https://www.myinstants.com/media/sounds/tada_1.mp3');
-        audio.play().catch(e => {});
-        alert("🎉 Bravo, c'est gagné ! C'était bien : " + currentCard.game);
-        revealCard(); // On bascule sur l'écran de révélation classique
-    } else {
-        let audio = new Audio('https://www.myinstants.com/media/sounds/bruh-sound-effect.mp3');
-        audio.play().catch(e => {});
-        alert("❌ Non, ce n'est pas ça ! Retentez.");
-        document.getElementById("btUserGuess").value = "";
-    }
-}
+        function revealCard() {
+            if(!currentCard) return;
+            document.getElementById("musicTitle").textContent = currentCard.music;
+            document.getElementById("gameTitle").textContent = currentCard.game;
+            document.getElementById("cardDate").textContent = "📅 " + currentCard.date;
+            document.getElementById("cardNumber").textContent = "CARTE N°" + currentCard.number;
+            showScreen("revealScreen");
+        }
+
+        function validateAnswer(isSuccess) {
+            let audio;
+            if (isSuccess) {
+                audio = new Audio('https://www.myinstants.com/media/sounds/tada_1.mp3');
+                alert("🎉 Bien joué ! Point validé !");
+            } else {
+                audio = new Audio('https://www.myinstants.com/media/sounds/bruh-sound-effect.mp3');
+                alert("❌ Oups ! Mauvaise réponse...");
+            }
+            audio.play().catch(e => {});
+            nextCard();
+        }
+
+        async function nextCard() {
+            await stopScanner();
+            currentCard = null;
+            document.getElementById("youtubePlayer").innerHTML = "";
+            document.getElementById("youtubePlayerBT").innerHTML = "";
+            showScreen("home");
+        }
     </script>
 </body>
 </html>
