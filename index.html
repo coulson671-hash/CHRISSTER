@@ -574,17 +574,22 @@ let scanner = null;
 
         function processQR(text) {
             const match = String(text).match(/GEEKSTER[-_]?(\d{1,3})/i);
-            if(!match) {
+            let number = "";
+            if(match) {
+                number = match[1].padStart(3, "0");
+            } else {
+                const cleanText = text.trim().padStart(3, "0");
+                if(cards[cleanText]) {
+                    number = cleanText;
+                }
+            }
+
+            if(!number || !cards[number]) {
                 document.getElementById("errorMessage").textContent = "Code QR non reconnu (" + text + ")";
                 showScreen("errorScreen");
                 return;
             }
-            const number = match[1].padStart(3, "0");
-            if(!cards[number]) {
-                document.getElementById("errorMessage").textContent = "Carte inconnue : " + number;
-                showScreen("errorScreen");
-                return;
-            }
+
             currentCard = { ...cards[number], number: number };
             document.getElementById("readyNumber").textContent = number;
             showScreen("readyScreen");
@@ -598,7 +603,6 @@ let scanner = null;
             showScreen("playerScreen");
         }
 
-        // Mode Blind Test Interactif
         function startBlindTestMode() {
             if(!currentCard) return;
             const playerBT = document.getElementById("youtubePlayerBT");
@@ -643,6 +647,7 @@ let scanner = null;
             if(!currentCard) return;
             document.getElementById("musicTitle").textContent = currentCard.music;
             document.getElementById("gameTitle").textContent = currentCard.game;
+            document.getElementById("cardCategory").textContent = currentCard.category || "Animation & Manga";
             document.getElementById("cardDate").textContent = "📅 " + currentCard.date;
             document.getElementById("cardNumber").textContent = "CARTE N°" + currentCard.number;
             showScreen("revealScreen");
