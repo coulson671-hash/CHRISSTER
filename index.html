@@ -540,7 +540,6 @@
         function playMusic() {
             if(!currentCard) return;
             const player = document.getElementById("youtubePlayer");
-            // Ajout de &rel=0 pour éviter les suggestions externes et d'autres paramètres propres
             player.innerHTML = `<iframe src="https://www.www.youtube-nocookie.com/embed/${currentCard.youtube}?autoplay=1&enablejsapi=1&rel=0&modestbranding=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
             document.getElementById("playingNumber").textContent = "Carte " + currentCard.number + " en cours...";
             showScreen("playerScreen");
