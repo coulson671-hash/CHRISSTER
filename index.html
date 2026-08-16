@@ -56,7 +56,7 @@
         <section id="readyScreen" class="screen">
             <div class="panel">
                 <h2>MUSIQUE PRÊTE</h2>
-                <p>Carte <span id="readyNumber"></span> reconnue.</p>
+                <p>Catégorie : <span id="readyCategory" style="color: #e50914; font-weight: bold;"></span></p>
             </div>
             <button onclick="playMusic()">▶️ LANCER LA MUSIQUE</button>
             <button class="secondary" onclick="revealCard()">👀 RÉVÉLER LA CARTE</button>
@@ -93,8 +93,8 @@
             <button class="secondary" onclick="nextCard()">📷 CARTE SUIVANTE</button>
         </section>
 
+        <!-- Lecteur YouTube unique pour tout l'app -->
         <div id="youtubePlayer" class="audio-player"></div>
-        <div id="youtubePlayerBT" class="audio-player"></div>
 
         <!-- 5. RÉVÉLATION -->
         <section id="revealScreen" class="screen">
@@ -127,10 +127,10 @@
     <script>
         const cards = {
             "001": { music: "MIDGAR", game: "FINAL FANTASY 7", date: "1997", category: "Jeux vidéo", youtube: "6uq5AbZXnaQ" },
-"002": { music: "Menu lancement + tour", game: "DESTINY", date: "2014", category: "Animation & Manga", youtube: "LRKfd5EKBtI" },
-"003": { music: "EXTINCTION", game: "RESIDENT EVIL", date: "2002", category: "FILM", youtube: "wUDEOpzIs_0" },
-"004": { music: "SHAKIRA", game: "DAI DAI", date: "2026", category: "Animation & Manga", youtube: "Y3jq_WIHP9k" },
-"005": { music: "Thème Principal", game: "Les Mystérieuses Cités d'Or", date: "1982", category: "Animation & Manga", youtube: "uRgyvYXLDx4" },
+            "002": { music: "Menu lancement + tour", game: "DESTINY", date: "2014", category: "Jeux vidéo", youtube: "LRKfd5EKBtI" },
+            "003": { music: "EXTINCTION", game: "RESIDENT EVIL 1", date: "2002", category: "Film", youtube: "wUDEOpzIs_0" },
+            "004": { music: "Générique Chantal Goya", game: "Bouba", date: "1981", category: "Animation & Manga", youtube: "f-DLUoa2svE" },
+            "005": { music: "Thème Principal", game: "Les Mystérieuses Cités d'Or", date: "1982", category: "Animation & Manga", youtube: "uRgyvYXLDx4" },
             "006": { music: "Thème Principal", game: "Inspecteur Gadget", date: "1983", category: "Animation & Manga", youtube: "SeE6dzk1tO0" },
             "007": { music: "Générique Français", game: "Les Entrechats", date: "1984", category: "Animation & Manga", youtube: "CKEenLbdi4o" },
             "008": { music: "Générique Français", game: "Les Snorky", date: "1984", category: "Animation & Manga", youtube: "rXzgB6II5UI" },
@@ -454,12 +454,14 @@
             }
 
             currentCard = { ...cards[number], number: number };
-            document.getElementById("readyNumber").textContent = number;
+            document.getElementById("readyCategory").textContent = currentCard.category || "Animation & Manga";
+            
             showScreen("readyScreen");
         }
 
         function playMusic() {
             if(!currentCard) return;
+            // Utilise l'unique lecteur
             const player = document.getElementById("youtubePlayer");
             player.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${currentCard.youtube}?autoplay=1&enablejsapi=1&rel=0&modestbranding=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
             document.getElementById("playingNumber").textContent = "Carte n°" + currentCard.number;
@@ -468,8 +470,7 @@
 
         function startBlindTestMode() {
             if(!currentCard) return;
-            const playerBT = document.getElementById("youtubePlayerBT");
-            playerBT.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${currentCard.youtube}?autoplay=1&enablejsapi=1&rel=0&modestbranding=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+            // On garde le même lecteur unique (pas de duplication d'iframe)
             document.getElementById("btPlayingNumber").textContent = "Carte n°" + currentCard.number;
             document.getElementById("btClues").innerHTML = "";
             document.getElementById("btUserGuess").value = "";
@@ -532,8 +533,12 @@
         async function nextCard() {
             await stopScanner();
             currentCard = null;
+            // Stoppe la musique en vidant l'unique lecteur
             document.getElementById("youtubePlayer").innerHTML = "";
-            document.getElementById("youtubePlayerBT").innerHTML = "";
+            
+            document.getElementById("scannerPanel").style.display = "none";
+            document.getElementById("startPanel").style.display = "block";
+            
             showScreen("home");
         }
     </script>
