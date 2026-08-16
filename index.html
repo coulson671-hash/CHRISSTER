@@ -25,8 +25,8 @@
         #reader { width: 100%; min-height: 310px; }
         .audio-player { position: fixed; bottom: -500px; left: -500px; width: 300px; height: 300px; z-index: -999; }
         .audio-player iframe { width: 100%; height: 100%; border: 0; }
-        .music-title { font-size: 24px; font-weight: bold; color: #f5be32; }
-        .game-title { color: #fff; margin-top: 10px; font-size: 20px; font-weight: bold; }
+        .game-title { font-size: 24px; font-weight: bold; color: #f5be32; }
+        .music-title { color: #fff; margin-top: 10px; font-size: 20px; font-weight: bold; }
         .card-category { color: #e50914; margin-top: 6px; font-size: 15px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
         .card-date { color: #aaa; margin-top: 6px; font-size: 16px; font-style: italic; }
         .card-number { color: #888; margin-top: 12px; font-weight: bold; font-size: 14px; }
@@ -100,8 +100,8 @@
         <section id="revealScreen" class="screen">
             <div class="panel">
                 <h2>🎉 RÉVÉLATION</h2>
-                <div id="musicTitle" class="music-title"></div>
                 <div id="gameTitle" class="game-title"></div>
+                <div id="musicTitle" class="music-title"></div>
                 <div id="cardCategory" class="card-category"></div>
                 <div id="cardDate" class="card-date"></div>
                 <div id="cardNumber" class="card-number"></div>
@@ -464,7 +464,6 @@
             const player = document.getElementById("youtubePlayer");
             player.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${currentCard.youtube}?autoplay=1&enablejsapi=1&rel=0&modestbranding=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
             
-            // Affichage de la catégorie à la place du numéro
             document.getElementById("playingCategory").textContent = currentCard.category || "Animation & Manga";
             showScreen("playerScreen");
         }
@@ -509,8 +508,8 @@
 
         function revealCard() {
             if(!currentCard) return;
-            document.getElementById("musicTitle").textContent = currentCard.music;
             document.getElementById("gameTitle").textContent = currentCard.game;
+            document.getElementById("musicTitle").textContent = currentCard.music;
             document.getElementById("cardCategory").textContent = currentCard.category || "Animation & Manga";
             document.getElementById("cardDate").textContent = "📅 " + currentCard.date;
             document.getElementById("cardNumber").textContent = "CARTE N°" + currentCard.number;
