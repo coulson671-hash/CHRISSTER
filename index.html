@@ -541,7 +541,7 @@
             if(!currentCard) return;
             const player = document.getElementById("youtubePlayer");
             player.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${currentCard.youtube}?autoplay=1&enablejsapi=1" allow="autoplay"></iframe>`;
-            document.getElementById("playingNumber").textContent = "Carte " + currentCard.number + " en cours...";
+            document.getElementById("playingNumber").textContent = currentCard.category;
             showScreen("playerScreen");
         }
 
