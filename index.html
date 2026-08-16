@@ -533,7 +533,7 @@
                 return;
             }
             currentCard = { ...cards[number], number: number };
-            document.getElementById("readyNumber").textContent = number;
+          document.getElementById("cardNumber").textContent = currentCard.category;
             showScreen("readyScreen");
         }
 
