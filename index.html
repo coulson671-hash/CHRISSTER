@@ -485,97 +485,98 @@
 "395": { music: "Main Theme", game: "Le Problème à 3 corps", date: "2024", youtube: "RzCw-L-VeVg" },
         };
 
-        let scanner = null;
-        let currentCard = null;
+let scanner = null;
+let currentCard = null;
 
-        function showScreen(id) {
-            document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-            document.getElementById(id).classList.add("active");
-        }
+function showScreen(id) {
+    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+    const target = document.getElementById(id);
+    if(target) target.classList.add("active");
+}
 
-      async function startScanner() {
-            // Au lieu de manipuler le display, on utilise ton gestionnaire d'écrans
-            showScreen("scannerPanel"); // Assure-toi que ton conteneur s'appelle bien "scannerPanel" et a la classe "screen"
-            
-            scanner = new Html5Qrcode("reader");
-            try {
-                await scanner.start({ facingMode: "environment" }, { fps: 10, qrbox: 240 }, async (text) => {
-                    await stopScanner();
-                    processQR(text);
-                });
-            } catch(e) {
+async function startScanner() {
+    document.getElementById("startPanel").style.display = "none";
+    document.getElementById("scannerPanel").style.display = "block";
+    
+    if (typeof Html5Qrcode === 'undefined') {
+        alert("La bibliothèque du scanner n'est pas chargée !");
+        return;
+    }
+
+    scanner = new Html5Qrcode("reader");
+    try {
+        await scanner.start(
+            { facingMode: "environment" }, 
+            { fps: 10, qrbox: 240 }, 
+            async (text) => {
                 await stopScanner();
-                document.getElementById("errorMessage").textContent = "Accès caméra refusé ou indisponible.";
-                showScreen("errorScreen");
+                processQR(text);
             }
-        }
+        );
+    } catch(e) {
+        await stopScanner();
+        document.getElementById("errorMessage").textContent = "Accès caméra refusé ou indisponible.";
+        showScreen("errorScreen");
+    }
+}
 
-        async function stopScanner() {
-            if(scanner) { 
-                try { 
-                    await scanner.stop(); 
-                } catch(e){} 
-                scanner = null; 
-            }
-        }
+async function stopScanner() {
+    if(scanner) { 
+        try { 
+            await scanner.stop(); 
+        } catch(e){} 
+        scanner = null; 
+    }
+    document.getElementById("scannerPanel").style.display = "none";
+}
 
-        async function cancelScanner() {
-            await stopScanner();
-            showScreen("home"); // Retourne à l'écran d'accueil via ta fonction
-        }
+async function cancelScanner() {
+    await stopScanner();
+    document.getElementById("startPanel").style.display = "block";
+}
 
-        async function stopScanner() {
-            if(scanner) { try { await scanner.stop(); } catch(e){} scanner = null; }
-            document.getElementById("scannerPanel").style.display = "none";
-        }
+function processQR(text) {
+    const match = String(text).match(/GEEKSTER[-_]?(\d{1,3})/i);
+    if(!match) {
+        document.getElementById("errorMessage").textContent = "Code QR non reconnu (" + text + ")";
+        showScreen("errorScreen");
+        return;
+    }
+    const number = match[1].padStart(3, "0");
+    if(!cards[number]) {
+        document.getElementById("errorMessage").textContent = "Carte inconnue : " + number;
+        showScreen("errorScreen");
+        return;
+    }
+    currentCard = { ...cards[number], number: number };
+    document.getElementById("readyNumber").textContent = number;
+    showScreen("readyScreen");
+}
 
-        async function cancelScanner() {
-            await stopScanner();
-            document.getElementById("startPanel").style.display = "block";
-        }
+function playMusic() {
+    if(!currentCard) return;
+    const player = document.getElementById("youtubePlayer");
+    player.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${currentCard.youtube}?autoplay=1&enablejsapi=1&rel=0&modestbranding=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+    document.getElementById("playingNumber").textContent = currentCard.category;
+    showScreen("playerScreen");
+}
 
-        function processQR(text) {
-            const match = String(text).match(/GEEKSTER[-_]?(\d{1,3})/i);
-            if(!match) {
-                document.getElementById("errorMessage").textContent = "Code QR non reconnu (" + text + ")";
-                showScreen("errorScreen");
-                return;
-            }
-            const number = match[1].padStart(3, "0");
-            if(!cards[number]) {
-                document.getElementById("errorMessage").textContent = "Carte inconnue : " + number;
-                showScreen("errorScreen");
-                return;
-            }
-            currentCard = { ...cards[number], number: number };
-         document.getElementById("playingNumber").textContent = currentCard.category;
-            showScreen("readyScreen");
-        }
+function revealCard() {
+    if(!currentCard) return;
+    document.getElementById("musicTitle").textContent = currentCard.music;
+    document.getElementById("gameTitle").textContent = currentCard.game;
+    document.getElementById("cardDate").textContent = "📅 " + currentCard.date;
+    document.getElementById("cardNumber").textContent = currentCard.category;
+    showScreen("revealScreen");
+}
 
-        function playMusic() {
-            if(!currentCard) return;
-            const player = document.getElementById("youtubePlayer");
-            player.innerHTML = `<iframe src="https://www.www.youtube-nocookie.com/embed/${currentCard.youtube}?autoplay=1&enablejsapi=1&rel=0&modestbranding=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-            document.getElementById("playingNumber").textContent = "Carte " + currentCard.number + " en cours...";
-            showScreen("playerScreen");
-        }
-        }
-
-        function revealCard() {
-            if(!currentCard) return;
-            document.getElementById("musicTitle").textContent = currentCard.music;
-            document.getElementById("gameTitle").textContent = currentCard.game;
-            document.getElementById("cardDate").textContent = "📅 " + currentCard.date;
-            document.getElementById("cardNumber").textContent = "CARTE " + currentCard.number;
-            showScreen("revealScreen");
-        }
-
-        async function nextCard() {
-            await stopScanner();
-            currentCard = null;
-            document.getElementById("youtubePlayer").innerHTML = "";
-            document.getElementById("startPanel").style.display = "block";
-            showScreen("home");
+async function nextCard() {
+    await stopScanner();
+    currentCard = null;
+    document.getElementById("youtubePlayer").innerHTML = "";
+    document.getElementById("startPanel").style.display = "block";
+    showScreen("home");
+}
         }
     </script>
 </body>
